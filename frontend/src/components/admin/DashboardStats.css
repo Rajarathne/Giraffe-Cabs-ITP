@@ -1,0 +1,107 @@
+/* Dashboard Stats Styles */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: rgba(243, 242, 236, 0.95);
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(230, 39, 39, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+  background: linear-gradient(135deg, #1E93AB 0%, #E62727 100%);
+}
+
+.stat-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #1E93AB;
+}
+
+.stat-info p {
+  margin: 0 0 0.25rem 0;
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.stat-info small {
+  color: #1E93AB;
+  font-weight: 700;
+  font-size: 0.9rem;
+  background: rgba(30, 147, 171, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+}
+
+/* Service Reminders Card */
+.stat-card.reminders {
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.stat-card.reminders:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.stat-card.clickable:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Urgent reminders styling */
+.stat-card.reminders .stat-icon {
+  background: linear-gradient(135deg, #E62727 0%, #dc2626 100%);
+}
+
+.stat-card.reminders .stat-info h3 {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.stat-card.reminders .stat-info small {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
