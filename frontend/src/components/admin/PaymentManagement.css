@@ -1,0 +1,321 @@
+/* Payment Management Styles */
+.payments-content {
+  padding: 2rem;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.content-header h2 {
+  margin: 0;
+  color: #333;
+}
+
+/* Payments Table */
+.payments-table {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.payments-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.payments-table th {
+  background: linear-gradient(135deg, #235784 0%, #40A8C4 100%);
+  color: white;
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.payments-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.payments-table tr:hover {
+  background: #f8f9fa;
+}
+
+/* Status Badges */
+.status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-failed {
+  background: #f5c6cb;
+  color: #721c24;
+}
+
+.status-refunded {
+  background: #cce5ff;
+  color: #004085;
+}
+
+/* Status Dropdown */
+.status-dropdown {
+  padding: 0.5rem 0.75rem;
+  border: 2px solid transparent;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+  background: white;
+  color: #333;
+}
+
+.status-dropdown:focus {
+  outline: none;
+  border-color: #235784;
+  box-shadow: 0 0 0 3px rgba(35, 87, 132, 0.1);
+}
+
+/* Status Dropdown Color Variants */
+.status-dropdown.status-pending {
+  background: #fff3cd;
+  color: #856404;
+  border-color: #ffeaa7;
+}
+
+.status-dropdown.status-pending:hover {
+  background: #ffeaa7;
+  border-color: #fdcb6e;
+}
+
+.status-dropdown.status-completed {
+  background: #d4edda;
+  color: #155724;
+  border-color: #c3e6cb;
+}
+
+.status-dropdown.status-completed:hover {
+  background: #c3e6cb;
+  border-color: #a3d9a4;
+}
+
+.status-dropdown.status-failed {
+  background: #f5c6cb;
+  color: #721c24;
+  border-color: #f1aeb5;
+}
+
+.status-dropdown.status-failed:hover {
+  background: #f1aeb5;
+  border-color: #e99aa2;
+}
+
+.status-dropdown.status-refunded {
+  background: #cce5ff;
+  color: #004085;
+  border-color: #b3d9ff;
+}
+
+.status-dropdown.status-refunded:hover {
+  background: #b3d9ff;
+  border-color: #99ccff;
+}
+
+/* Payment Type Badges */
+.status-booking {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-rental {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+.status-service {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-unknown {
+  background: #e2e3e5;
+  color: #6c757d;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.action-buttons .btn {
+  font-size: 0.8rem;
+  padding: 0.5rem;
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.action-buttons .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.action-buttons .btn i {
+  font-size: 0.9rem;
+}
+
+/* Button Color Variants */
+.btn-primary {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0056b3, #004085);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+  color: white;
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #1e7e34, #155724);
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #ffc107, #e0a800);
+  color: #212529;
+}
+
+.btn-warning:hover {
+  background: linear-gradient(135deg, #e0a800, #d39e00);
+}
+
+.btn-info {
+  background: linear-gradient(135deg, #17a2b8, #138496);
+  color: white;
+}
+
+.btn-info:hover {
+  background: linear-gradient(135deg, #138496, #117a8b);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, #c82333, #bd2130);
+}
+
+/* Button Styles */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .payments-content {
+    padding: 1rem;
+  }
+  
+  .payments-table {
+    overflow-x: auto;
+  }
+  
+  .payments-table table {
+    min-width: 800px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .status-dropdown {
+    min-width: 100px;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
