@@ -1,0 +1,254 @@
+/* Tour Package Management Styles */
+.tour-package-management {
+  padding: 2rem;
+}
+
+/* Tour Packages Table - Enhanced */
+.tour-packages-table {
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e8f4fd;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 1rem;
+}
+
+.tour-packages-table::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #1E93AB;
+}
+
+.tour-packages-table table {
+  width: 100%;
+  border-collapse: collapse;
+  position: relative;
+}
+
+.tour-packages-table th {
+  background: #1E93AB;
+  color: white;
+  padding: 0.8rem 0.8rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.tour-packages-table th::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.tour-packages-table td {
+  padding: 0.8rem 0.8rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.tour-packages-table td:last-child {
+  padding: 0.6rem 0.6rem;
+  min-width: 180px;
+  vertical-align: top;
+}
+
+.tour-packages-table tr {
+  transition: all 0.3s ease;
+}
+
+.tour-packages-table tr:hover {
+  background: rgba(30, 147, 171, 0.05);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.tour-packages-table tr:hover td {
+  color: #1E93AB;
+  font-weight: 500;
+}
+
+/* Content Header */
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.content-header h2 {
+  color: #1E93AB;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Category Badge */
+.category-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.category-adventure { background: #ff6b6b; color: white; }
+.category-pilgrimage { background: #4ecdc4; color: white; }
+.category-nature { background: #45b7d1; color: white; }
+.category-cultural { background: #96ceb4; color: white; }
+.category-family { background: #feca57; color: #333; }
+.category-corporate { background: #ff9ff3; color: white; }
+
+/* Status Badge */
+.status-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-active { background: #28a745; color: white; }
+.status-inactive { background: #6c757d; color: white; }
+.status-seasonal { background: #ffc107; color: #333; }
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: #1E93AB;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #197a8f;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(30, 147, 171, 0.3);
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+}
+
+.btn-info {
+  background: #17a2b8;
+  color: white;
+}
+
+.btn-info:hover {
+  background: #138496;
+  transform: translateY(-1px);
+}
+
+.btn-warning {
+  background: #ffc107;
+  color: #333;
+}
+
+.btn-warning:hover {
+  background: #e0a800;
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+}
+
+.btn-success {
+  background: #28a745;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+.btn-sm {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.7rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tour-package-management {
+    padding: 1rem;
+  }
+  
+  .content-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .header-actions {
+    justify-content: center;
+  }
+  
+  .tour-packages-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .tour-packages-table table {
+    min-width: 800px;
+  }
+  
+  .tour-packages-table th,
+  .tour-packages-table td {
+    padding: 0.5rem 0.4rem;
+    font-size: 0.8rem;
+  }
+}
