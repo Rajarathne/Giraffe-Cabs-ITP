@@ -1,0 +1,125 @@
+/* Financial Management Styles */
+.financial-content {
+  padding: 2rem;
+}
+
+.financial-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card.income {
+  background: linear-gradient(135deg, #1E93AB, #0d7a8a);
+  color: white;
+}
+
+.stat-card.expense {
+  background: linear-gradient(135deg, #E62727, #dc2626);
+  color: white;
+}
+
+.stat-card.profit {
+  background: linear-gradient(135deg, #1E93AB, #E62727);
+  color: white;
+}
+
+.stat-card.income .stat-icon,
+.stat-card.expense .stat-icon,
+.stat-card.profit .stat-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.financial-chart {
+  margin-bottom: 2rem;
+}
+
+.financial-chart .chart-card {
+  background: rgba(243, 242, 236, 0.95);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(230, 39, 39, 0.2);
+}
+
+.income-section,
+.expense-section {
+  background: rgba(243, 242, 236, 0.95);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(230, 39, 39, 0.2);
+}
+
+.income-section h3,
+.expense-section h3 {
+  margin: 0 0 1.5rem 0;
+  color: #1E93AB;
+  font-size: 1.3rem;
+  border-bottom: 2px solid #1E93AB;
+  padding-bottom: 0.5rem;
+}
+
+.income-table,
+.expense-table {
+  overflow-x: auto;
+}
+
+.income-table table,
+.expense-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.income-table th,
+.expense-table th {
+  background: rgba(30, 147, 171, 0.1);
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #1E93AB;
+  border-bottom: 2px solid rgba(30, 147, 171, 0.3);
+}
+
+.income-table td,
+.expense-table td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(30, 147, 171, 0.1);
+  vertical-align: middle;
+}
+
+.income-table tr:hover,
+.expense-table tr:hover {
+  background: rgba(30, 147, 171, 0.05);
+}
+
+.positive {
+  color: #1E93AB !important;
+}
+
+.negative {
+  color: #E62727 !important;
+}
+
+/* Responsive Financial Styles */
+@media (max-width: 768px) {
+  .financial-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .income-table,
+  .expense-table {
+    font-size: 0.9rem;
+  }
+
+  .income-table th,
+  .expense-table th,
+  .income-table td,
+  .expense-table td {
+    padding: 0.5rem;
+  }
+}
