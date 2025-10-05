@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import './TourPackageManagement.css';
 
@@ -14,8 +14,7 @@ const TourPackageManagement = ({
   const [showReportsModal, setShowReportsModal] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
   const [uploadedImages, setUploadedImages] = useState([]);
-  const [uploadStatus, setUploadStatus] = useState({ loading: false, message: '' });
-  const [selectedReportType, setSelectedReportType] = useState('');
+  const [, setUploadStatus] = useState({ loading: false, message: '' });
   const [reportFilters, setReportFilters] = useState({
     dateFrom: '',
     dateTo: '',
@@ -294,25 +293,6 @@ const TourPackageManagement = ({
     }));
   };
 
-  // Photo upload handling
-  const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files);
-    const newImages = files.map(file => ({
-      file,
-      preview: URL.createObjectURL(file),
-      name: file.name
-    }));
-    setUploadedImages(prev => [...prev, ...newImages]);
-  };
-
-  const removeImage = (index) => {
-    setUploadedImages(prev => {
-      const newImages = prev.filter((_, i) => i !== index);
-      // Revoke object URL to prevent memory leaks
-      URL.revokeObjectURL(prev[index].preview);
-      return newImages;
-    });
-  };
 
   const handleImageSubmit = async () => {
     if (uploadedImages.length === 0) {
@@ -549,16 +529,6 @@ const TourPackageManagement = ({
 
   // Note: CSV generation functions removed as reports are now generated on backend
 
-  const resetReportFilters = () => {
-    setReportFilters({
-      dateFrom: '',
-      dateTo: '',
-      category: '',
-      status: '',
-      tourType: ''
-    });
-    setReportData(null);
-  };
 
   const renderReportContent = (reportData) => {
     const { type, data } = reportData;

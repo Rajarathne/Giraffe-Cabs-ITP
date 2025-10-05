@@ -3,3 +3,6 @@ EMAIL_SETUP_GUIDE.md
 FORGOT_PASSWORD_FEATURE.md
 FORGOT_PASSWORD_QUICK_START.md
 LOGIN_SIGNUP_IMPROVEMENTS.md
+
+# Database connection test file (contains sensitive connection strings)
+backend/test-connection.js
