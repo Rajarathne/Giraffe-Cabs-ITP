@@ -47,6 +47,13 @@
   font-size: 1.4rem;
 }
 
+.booking-note {
+  margin: 0.5rem 0 0 0;
+  color: #666;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
 /* Booking Management Specific Styles */
 .bookings-content .search-filter-section {
   background: #ffffff;
@@ -290,12 +297,12 @@
 .bookings-table th {
   background: #1E93AB;
   color: white;
-  padding: 0.8rem 0.8rem;
+  padding: 0.5rem 0.6rem;
   text-align: left;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   position: relative;
 }
 
@@ -310,15 +317,16 @@
 }
 
 .bookings-table td {
-  padding: 0.8rem 0.8rem;
+  padding: 0.5rem 0.6rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   position: relative;
+  font-size: 0.8rem;
 }
 
 .bookings-table td:last-child {
-  padding: 0.6rem 0.6rem;
-  min-width: 180px;
+  padding: 0.4rem 0.5rem;
+  min-width: 160px;
   vertical-align: top;
 }
 
@@ -434,23 +442,23 @@
 }
 
 .action-buttons .btn {
-  font-size: 0.75rem;
-  padding: 0.5rem 0.8rem;
-  border-radius: 8px;
+  font-size: 0.7rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
   font-weight: 600;
   text-transform: none;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   white-space: nowrap;
   flex-shrink: 0;
-  min-width: 70px;
+  min-width: 60px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.3rem;
+  gap: 0.2rem;
 }
 
 .action-buttons .btn::before {

@@ -1166,3 +1166,96 @@
     padding: 0.75rem 0.875rem;
   }
 }
+
+/* Price Estimation Styles */
+.price-estimation {
+  background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+  border: 2px solid #667eea;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.estimated-price-display {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.price-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rate-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: white;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.rate-item span:first-child {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.rate-item span:last-child {
+  font-weight: 700;
+  color: #667eea;
+  font-size: 1rem;
+}
+
+.total-price-highlight {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 10px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.total-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.total-label {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.total-amount {
+  font-size: 1.8rem;
+  font-weight: 800;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive price estimation */
+@media (max-width: 768px) {
+  .price-estimation {
+    padding: 15px;
+  }
+  
+  .rate-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .total-price {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+  
+  .total-amount {
+    font-size: 1.5rem;
+  }
+}

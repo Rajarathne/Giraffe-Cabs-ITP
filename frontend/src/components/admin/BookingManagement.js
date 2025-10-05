@@ -62,10 +62,12 @@ const BookingManagement = ({
       filtered = filtered.filter(booking => booking.paymentStatus === paymentStatusFilter);
     }
 
+    // Show only cash payment bookings in Booking Management
+    filtered = filtered.filter(booking => booking.paymentMethod === 'cash');
+
     // Date filter
     if (dateFilter !== 'all') {
       const today = new Date();
-      const filterDate = new Date();
       
       switch (dateFilter) {
         case 'today':
@@ -93,6 +95,8 @@ const BookingManagement = ({
             const bookingDate = new Date(booking.pickupDate);
             return bookingDate > today;
           });
+          break;
+        default:
           break;
       }
     }
@@ -174,7 +178,34 @@ const BookingManagement = ({
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      alert('Pricing updated successfully!');
+      // Update booking status to confirmed
+      await axios.put(`/api/bookings/${selectedBooking._id}`, {
+        status: 'confirmed'
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      // Create payment record for cash payments when admin confirms price
+      if (selectedBooking.paymentMethod === 'cash') {
+        try {
+          await axios.post('/api/payments', {
+            bookingId: selectedBooking._id,
+            amount: parseFloat(pricingData.adminSetPrice),
+            paymentMethod: 'cash',
+            status: 'pending', // Pending until driver collects cash
+            customerName: selectedBooking.user?.firstName + ' ' + selectedBooking.user?.lastName,
+            customerEmail: selectedBooking.user?.email,
+            customerPhone: selectedBooking.user?.phone
+          }, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+        } catch (paymentError) {
+          console.error('Error creating payment record:', paymentError);
+          // Don't fail the entire operation if payment record creation fails
+        }
+      }
+
+      alert('Pricing updated and booking confirmed successfully!');
       setShowPricingModal(false);
       setSelectedBooking(null);
       setPricingData({
@@ -232,7 +263,8 @@ const BookingManagement = ({
   return (
     <div className="bookings-content">
       <div className="content-header">
-        <h2>Booking Management</h2>
+        <h2>💵 Cash Payment Booking Management</h2>
+        <p className="booking-note">Showing only cash payment bookings. Card payments are managed in Payment Management.</p>
       </div>
 
       {/* Search and Filter Section */}

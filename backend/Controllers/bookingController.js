@@ -59,7 +59,9 @@ const createBooking = async (req, res) => {
   try {
     const bookingData = {
       ...req.body,
-      user: req.user._id
+      user: req.user._id,
+      // Set default payment status based on payment method
+      paymentStatus: req.body.paymentMethod === 'cash' ? 'pending' : 'pending'
     };
 
     const booking = new Booking(bookingData);

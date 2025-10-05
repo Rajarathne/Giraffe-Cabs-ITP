@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Booking.css';
@@ -134,7 +134,7 @@ const Booking = () => {
     navigate('/');
   };
 
-  const services = [
+  const services = useMemo(() => [
     {
       id: 'wedding',
       name: 'Wedding Service',
@@ -180,7 +180,7 @@ const Booking = () => {
         { vehicle: 'Bike', rate: 'LKR 50/km' }
       ]
     }
-  ];
+  ], []);
 
   // Filter services based on search term and price filter
   useEffect(() => {
@@ -227,15 +227,64 @@ const Booking = () => {
 
   useEffect(() => {
     // Price calculation is handled by admin, so this effect is simplified.
-    // Kept for potential future use or if client-side estimation is re-enabled.
-    const calculatePrice = () => {
+    // Calculate estimated price based on service and distance
+    const calculateEstimatedPrice = () => {
+      if (!selectedService || !bookingData.distance || bookingData.distance <= 0) {
+        setBookingData(prev => ({
+          ...prev,
+          totalPrice: 0
+        }));
+        return;
+      }
+
+      let estimatedPrice = 0;
+      const distance = bookingData.distance;
+      const service = services.find(s => s.id === selectedService);
+
+      if (!service) return;
+
+      switch (selectedService) {
+        case 'wedding':
+          // Wedding service - fixed price regardless of distance
+          estimatedPrice = service.basePrice;
+          break;
+          
+        case 'airport':
+          // Airport transfer - fixed price
+          estimatedPrice = service.basePrice;
+          break;
+          
+        case 'cargo':
+          // Cargo service - per km pricing
+          estimatedPrice = distance * 120; // LKR 120 per km for cargo
+          break;
+          
+        case 'daily':
+          // Daily rental - per km pricing based on vehicle type
+          const vehicleType = bookingData.serviceDetails.vehicleType;
+          let ratePerKm = 90; // Default rate
+          
+          if (vehicleType === 'bike') ratePerKm = 50;
+          else if (vehicleType === 'economy') ratePerKm = 90;
+          else if (vehicleType === 'comfort') ratePerKm = 120;
+          else if (vehicleType === 'luxury') ratePerKm = 150;
+          else if (vehicleType === 'van') ratePerKm = 120;
+          
+          estimatedPrice = distance * ratePerKm;
+          break;
+          
+        default:
+          estimatedPrice = service.basePrice;
+      }
+
       setBookingData(prev => ({
         ...prev,
-        totalPrice: 0 // Price is set to 0 as it will be confirmed by admin
+        totalPrice: estimatedPrice
       }));
     };
-    calculatePrice();
-  }, [selectedService, bookingData.serviceDetails, bookingData.passengers, bookingData.distance]);
+
+    calculateEstimatedPrice();
+  }, [selectedService, bookingData.serviceDetails, bookingData.passengers, bookingData.distance, services]);
 
 
   // Estimate distance using known routes in Sri Lanka
@@ -322,15 +371,6 @@ const Booking = () => {
     setError('');
   };
 
-  const validateForm = () => {
-    if (!selectedService) return setError('Please select a service type');
-    if (!bookingData.pickupLocation) return setError('Please enter pickup location');
-    if (!bookingData.dropoffLocation) return setError('Please enter dropoff location');
-    if (!bookingData.pickupDate) return setError('Please select pickup date');
-    if (!bookingData.pickupTime) return setError('Please select pickup time');
-    if (bookingData.passengers < 1) return setError('Please enter number of passengers');
-    return true;
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -375,7 +415,12 @@ const Booking = () => {
         console.error('Failed to download invoice:', invoiceError);
       }
 
-      window.location.href = `/payment?bookingId=${newBooking._id}`;
+      // Navigate to payment page with booking data
+      navigate('/payment', {
+        state: {
+          bookingData: newBooking
+        }
+      });
 
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to submit booking request');
@@ -849,30 +894,65 @@ const Booking = () => {
                 </div>
 
                 <div className="rate-information">
-                  <h3>Service Rates</h3>
-                  <div className="rate-breakdown">
-                    {selectedService === 'wedding' ? (
-                      <div className="rate-item">
-                        <span>Wedding Service</span>
-                        <span>Fixed Price (Admin will confirm)</span>
+                  <h3>💰 Price Estimation</h3>
+                  
+                  {selectedService && (
+                    <div className="price-estimation">
+                      <div className="estimated-price-display">
+                        <div className="price-breakdown">
+                          {selectedService === 'wedding' ? (
+                            <div className="rate-item">
+                              <span>Wedding Service</span>
+                              <span>Fixed Price: LKR {bookingData.totalPrice.toLocaleString()}</span>
+                            </div>
+                          ) : selectedService === 'airport' ? (
+                            <div className="rate-item">
+                              <span>Airport Transfer</span>
+                              <span>Fixed Price: LKR {bookingData.totalPrice.toLocaleString()}</span>
+                            </div>
+                          ) : (
+                            <div className="rate-item">
+                              <span>
+                                {selectedService === 'cargo' && 'Cargo Transport: 120 LKR/km'}
+                                {selectedService === 'daily' && bookingData.serviceDetails.vehicleType === 'van' && 'Daily Rental (Van): 120 LKR/km'}
+                                {selectedService === 'daily' && bookingData.serviceDetails.vehicleType === 'bike' && 'Daily Rental (Bike): 50 LKR/km'}
+                                {selectedService === 'daily' && bookingData.serviceDetails.vehicleType === 'economy' && 'Daily Rental (Economy): 90 LKR/km'}
+                                {selectedService === 'daily' && bookingData.serviceDetails.vehicleType === 'comfort' && 'Daily Rental (Comfort): 120 LKR/km'}
+                                {selectedService === 'daily' && bookingData.serviceDetails.vehicleType === 'luxury' && 'Daily Rental (Luxury): 150 LKR/km'}
+                              </span>
+                              <span>
+                                {bookingData.distance > 0 ? (
+                                  <>
+                                    {bookingData.distance} km × {selectedService === 'cargo' ? '120' : 
+                                      selectedService === 'daily' && bookingData.serviceDetails.vehicleType === 'bike' ? '50' :
+                                      selectedService === 'daily' && bookingData.serviceDetails.vehicleType === 'economy' ? '90' :
+                                      selectedService === 'daily' && bookingData.serviceDetails.vehicleType === 'comfort' ? '120' :
+                                      selectedService === 'daily' && bookingData.serviceDetails.vehicleType === 'luxury' ? '150' :
+                                      selectedService === 'daily' && bookingData.serviceDetails.vehicleType === 'van' ? '120' : '90'} = LKR {bookingData.totalPrice.toLocaleString()}
+                                  </>
+                                ) : (
+                                  'Enter distance to see price'
+                                )}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {bookingData.totalPrice > 0 && (
+                          <div className="total-price-highlight">
+                            <div className="total-price">
+                              <span className="total-label">Estimated Total:</span>
+                              <span className="total-amount">LKR {bookingData.totalPrice.toLocaleString()}</span>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    ) : (
-                      <div className="rate-item">
-                        <span>
-                          {selectedService === 'cargo' && 'Cargo Transport: 150 LKR/km'}
-                          {selectedService === 'airport' && bookingData.serviceDetails.vehicleType === 'van' && 'Airport Transfer (Van): 120 LKR/km'}
-                          {selectedService === 'airport' && bookingData.serviceDetails.vehicleType !== 'van' && 'Airport Transfer (Car): 100 LKR/km'}
-                          {selectedService === 'daily' && bookingData.serviceDetails.vehicleType === 'van' && 'Daily Rental (Van): 120 LKR/km'}
-                          {selectedService === 'daily' && (bookingData.serviceDetails.vehicleType === 'economy' || bookingData.serviceDetails.vehicleType === 'comfort' || bookingData.serviceDetails.vehicleType === 'luxury') && 'Daily Rental (Car): 90 LKR/km'}
-                          {selectedService === 'daily' && bookingData.serviceDetails.vehicleType === 'bike' && 'Daily Rental (Bike): 50 LKR/km'}
-                        </span>
-                        <span>Admin will calculate final price</span>
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
+
                   <div className="pricing-note">
                     <i className="fas fa-info-circle"></i>
-                    <span>Admin will verify the distance and calculate the final price. You will be notified of the confirmed price after booking submission.</span>
+                    <span>This is an estimated price based on your inputs. Admin will verify the distance and confirm the final price after booking submission.</span>
                   </div>
                 </div>
 
