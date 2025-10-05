@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './VehicleProviderManagement.css';
 import VehicleProviderRegistration from './VehicleProviderRegistration';
@@ -30,12 +30,7 @@ const VehicleProviderManagement = () => {
   const [actionType, setActionType] = useState('');
   const [rejectionReason, setRejectionReason] = useState('');
 
-  useEffect(() => {
-    loadVehicleProviders();
-    loadStats();
-  }, [filters, pagination.currentPage]);
-
-  const loadVehicleProviders = async () => {
+  const loadVehicleProviders = useCallback(async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('authToken');
@@ -57,7 +52,12 @@ const VehicleProviderManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters, pagination.currentPage, pagination.itemsPerPage]);
+
+  useEffect(() => {
+    loadVehicleProviders();
+    loadStats();
+  }, [filters, pagination.currentPage, loadVehicleProviders]);
 
   const loadStats = async () => {
     try {

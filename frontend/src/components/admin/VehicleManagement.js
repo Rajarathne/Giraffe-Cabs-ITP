@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './VehicleManagement.css';
 
 const VehicleManagement = ({ 
@@ -24,7 +24,7 @@ const VehicleManagement = ({
   const [isFormValid, setIsFormValid] = useState(false);
 
   // Validation functions
-  const validateVehicleNumber = (value) => {
+  const validateVehicleNumber = useCallback((value) => {
     if (!value || value.trim() === '') {
       return 'Vehicle number is required';
     }
@@ -43,7 +43,7 @@ const VehicleManagement = ({
       return 'Vehicle number already exists';
     }
     return '';
-  };
+  }, [vehicles, editingVehicle]);
 
   const validateYear = (value) => {
     if (!value) {
@@ -101,7 +101,7 @@ const VehicleManagement = ({
     return '';
   };
 
-  const validatePhotos = (photos) => {
+  const validatePhotos = useCallback((photos) => {
     if (!editingVehicle && (!photos || photos.length === 0)) {
       return 'At least one vehicle photo is required';
     }
@@ -109,10 +109,10 @@ const VehicleManagement = ({
       return 'Maximum 5 photos allowed';
     }
     return '';
-  };
+  }, [editingVehicle]);
 
   // Validate individual field
-  const validateField = (fieldName, value) => {
+  const validateField = useCallback((fieldName, value) => {
     switch (fieldName) {
       case 'vehicleNumber':
         return validateVehicleNumber(value);
@@ -147,10 +147,10 @@ const VehicleManagement = ({
       default:
         return '';
     }
-  };
+  }, [validateVehicleNumber]);
 
   // Validate entire form
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     const errors = {};
     const fieldsToValidate = [
       'vehicleNumber', 'vehicleType', 'brand', 'model', 'year', 
@@ -192,7 +192,7 @@ const VehicleManagement = ({
     setValidationErrors(errors);
     setIsFormValid(Object.keys(errors).length === 0);
     return Object.keys(errors).length === 0;
-  };
+  }, [vehicleData, selectedPhotos, validateField, validatePhotos]);
 
   // Handle field change with validation
   const handleFieldChange = (fieldName, value) => {
@@ -247,7 +247,7 @@ const VehicleManagement = ({
     if (showVehicleModal) {
       validateForm();
     }
-  }, [vehicleData, selectedPhotos, showVehicleModal]);
+  }, [vehicleData, selectedPhotos, showVehicleModal, validateForm]);
 
   // Helper function to get field validation class
   const getFieldValidationClass = (fieldName) => {

@@ -112,7 +112,7 @@ const VehicleProviderRegistration = () => {
         status: 'pending' // Start with pending status
       };
 
-      const response = await axios.post('/api/vehicle-provider/auth/register', registrationData, {
+      await axios.post('/api/vehicle-provider/auth/register', registrationData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -413,6 +413,10 @@ const VehicleProviderRegistration = () => {
 };
 
 export default VehicleProviderRegistration;
+
+
+
+
 
 
 

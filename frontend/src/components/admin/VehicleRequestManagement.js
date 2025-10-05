@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './VehicleRequestManagement.css';
 
@@ -32,12 +32,7 @@ const VehicleRequestManagement = () => {
     description: ''
   });
 
-  useEffect(() => {
-    loadVehicleRequests();
-    loadStats();
-  }, [filters, pagination.currentPage]);
-
-  const loadVehicleRequests = async () => {
+  const loadVehicleRequests = useCallback(async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('authToken');
@@ -59,7 +54,12 @@ const VehicleRequestManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters, pagination.currentPage, pagination.itemsPerPage]);
+
+  useEffect(() => {
+    loadVehicleRequests();
+    loadStats();
+  }, [filters, pagination.currentPage, loadVehicleRequests]);
 
   const loadStats = async () => {
     try {
