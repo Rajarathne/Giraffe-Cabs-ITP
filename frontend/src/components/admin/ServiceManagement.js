@@ -17,6 +17,10 @@ const ServiceManagement = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [validationErrors, setValidationErrors] = useState({});
+  const [serviceTypeFilter, setServiceTypeFilter] = useState('all');
+  const [vehicleFilter, setVehicleFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('all');
+  const [costFilter, setCostFilter] = useState('all');
 
   // Validation function
   const validateServiceData = (data) => {
@@ -70,10 +74,12 @@ const ServiceManagement = ({
     onServiceSubmit(e);
   };
 
-  // Filter service records based on search term
+  // Filter service records based on search term and filters
   const filteredServiceRecords = serviceRecords.filter(record => {
     const searchLower = searchTerm.toLowerCase();
-    return (
+    
+    // Apply search filter
+    const matchesSearch = !searchTerm || (
       record.vehicle?.vehicleNumber?.toLowerCase().includes(searchLower) ||
       record.vehicle?.brand?.toLowerCase().includes(searchLower) ||
       record.vehicle?.model?.toLowerCase().includes(searchLower) ||
@@ -81,8 +87,66 @@ const ServiceManagement = ({
       record.description?.toLowerCase().includes(searchLower) ||
       record.serviceProvider?.toLowerCase().includes(searchLower) ||
       record.technician?.toLowerCase().includes(searchLower) ||
-      record.notes?.toLowerCase().includes(searchLower)
+      record.notes?.toLowerCase().includes(searchLower) ||
+      record.cost?.toString().includes(searchTerm) ||
+      record.mileage?.toString().includes(searchTerm)
     );
+
+    // Apply service type filter
+    const matchesServiceType = serviceTypeFilter === 'all' || record.serviceType === serviceTypeFilter;
+
+    // Apply vehicle filter
+    const matchesVehicle = vehicleFilter === 'all' || record.vehicle?._id === vehicleFilter;
+
+    // Apply date filter
+    let matchesDate = true;
+    if (dateFilter !== 'all') {
+      const today = new Date();
+      const recordDate = new Date(record.serviceDate);
+      
+      switch (dateFilter) {
+        case 'today':
+          matchesDate = recordDate.toDateString() === today.toDateString();
+          break;
+        case 'week':
+          const weekAgo = new Date();
+          weekAgo.setDate(today.getDate() - 7);
+          matchesDate = recordDate >= weekAgo;
+          break;
+        case 'month':
+          const monthAgo = new Date();
+          monthAgo.setMonth(today.getMonth() - 1);
+          matchesDate = recordDate >= monthAgo;
+          break;
+        case 'year':
+          const yearAgo = new Date();
+          yearAgo.setFullYear(today.getFullYear() - 1);
+          matchesDate = recordDate >= yearAgo;
+          break;
+        default:
+          break;
+      }
+    }
+
+    // Apply cost filter
+    let matchesCost = true;
+    if (costFilter !== 'all' && record.cost) {
+      switch (costFilter) {
+        case 'low':
+          matchesCost = record.cost < 10000;
+          break;
+        case 'medium':
+          matchesCost = record.cost >= 10000 && record.cost < 50000;
+          break;
+        case 'high':
+          matchesCost = record.cost >= 50000;
+          break;
+        default:
+          break;
+      }
+    }
+
+    return matchesSearch && matchesServiceType && matchesVehicle && matchesDate && matchesCost;
   });
 
   return (
@@ -106,17 +170,72 @@ const ServiceManagement = ({
         </button>
       </div>
 
-      {/* Search Bar */}
-      <div className="search-container">
-        <div className="search-bar">
-          <i className="fas fa-search search-icon"></i>
+      {/* Compact Search and Filter Bar */}
+      <div className="compact-search-filter">
+        <div className="search-input-wrapper">
+          <i className="fas fa-search"></i>
           <input
             type="text"
             placeholder="Search service records..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
           />
+          {searchTerm && (
+            <button onClick={() => setSearchTerm('')} className="clear-btn">
+              <i className="fas fa-times"></i>
+            </button>
+          )}
+        </div>
+        
+        <div className="filter-dropdowns">
+          <select
+            value={serviceTypeFilter}
+            onChange={(e) => setServiceTypeFilter(e.target.value)}
+          >
+            <option value="all">All Types</option>
+            <option value="routine">Routine</option>
+            <option value="repair">Repair</option>
+            <option value="maintenance">Maintenance</option>
+            <option value="inspection">Inspection</option>
+            <option value="emergency">Emergency</option>
+          </select>
+          
+          <select
+            value={vehicleFilter}
+            onChange={(e) => setVehicleFilter(e.target.value)}
+          >
+            <option value="all">All Vehicles</option>
+            {vehicles.map(vehicle => (
+              <option key={vehicle._id} value={vehicle._id}>
+                {vehicle.vehicleNumber} - {vehicle.brand} {vehicle.model}
+              </option>
+            ))}
+          </select>
+          
+          <select
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+          >
+            <option value="all">All Time</option>
+            <option value="today">Today</option>
+            <option value="week">7 Days</option>
+            <option value="month">30 Days</option>
+            <option value="year">1 Year</option>
+          </select>
+          
+          <select
+            value={costFilter}
+            onChange={(e) => setCostFilter(e.target.value)}
+          >
+            <option value="all">All Costs</option>
+            <option value="low">Under 10K</option>
+            <option value="medium">10K-50K</option>
+            <option value="high">Over 50K</option>
+          </select>
+        </div>
+        
+        <div className="results-info">
+          {filteredServiceRecords.length} record{filteredServiceRecords.length !== 1 ? 's' : ''}
         </div>
       </div>
 
