@@ -34,7 +34,7 @@ const createPaymentIntent = async (req, res) => {
 // Create Payment Record
 const createPayment = async (req, res) => {
   try {
-    const { bookingId, amount, paymentMethod, status = 'pending', stripePaymentIntentId } = req.body;
+    const { bookingId, amount, paymentMethod, status = 'pending', stripePaymentIntentId, customerName, customerEmail, customerPhone } = req.body;
 
     const booking = await Booking.findById(bookingId);
     if (!booking) {
@@ -47,14 +47,24 @@ const createPayment = async (req, res) => {
       amount,
       paymentMethod,
       status,
-      stripePaymentIntentId
+      stripePaymentIntentId,
+      customerName,
+      customerEmail,
+      customerPhone
     };
 
     const payment = new Payment(paymentData);
     const savedPayment = await payment.save();
 
-    // Update booking payment status
-    booking.paymentStatus = status;
+    // Update booking payment status based on payment method
+    if (paymentMethod === 'stripe' || paymentMethod === 'card') {
+      // Card payments are immediately marked as paid
+      booking.paymentStatus = 'paid';
+    } else if (paymentMethod === 'cash') {
+      // Cash payments are pending until admin confirms
+      booking.paymentStatus = 'pending';
+    }
+    
     booking.paymentMethod = paymentMethod;
     await booking.save();
 
