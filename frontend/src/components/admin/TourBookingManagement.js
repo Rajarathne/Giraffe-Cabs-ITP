@@ -15,6 +15,13 @@ const TourBookingManagement = ({
     adminNotes: ''
   });
 
+  // Search and filter state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('all');
+  const [priceFilter, setPriceFilter] = useState('all');
+
   const handleBookingSelect = (booking) => {
     setSelectedBooking(booking);
     setActionData({
@@ -76,6 +83,81 @@ const TourBookingManagement = ({
     return `LKR ${amount?.toLocaleString() || '0'}`;
   };
 
+  // Filter tour bookings based on search term and filters
+  const filteredTourBookings = tourBookings.filter(booking => {
+    const searchLower = searchTerm.toLowerCase();
+    
+    // Apply search filter
+    const matchesSearch = !searchTerm || (
+      booking._id?.toLowerCase().includes(searchLower) ||
+      booking.contactPerson?.name?.toLowerCase().includes(searchLower) ||
+      booking.contactPerson?.email?.toLowerCase().includes(searchLower) ||
+      booking.contactPerson?.phone?.includes(searchTerm) ||
+      booking.tourPackage?.packageName?.toLowerCase().includes(searchLower) ||
+      booking.tourPackage?.destination?.toLowerCase().includes(searchLower) ||
+      booking.tourPackage?.tourCategory?.toLowerCase().includes(searchLower) ||
+      booking.numberOfPassengers?.toString().includes(searchTerm) ||
+      booking.pricing?.basePrice?.toString().includes(searchTerm) ||
+      booking.pricing?.finalPrice?.toString().includes(searchTerm)
+    );
+
+    // Apply status filter
+    const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
+
+    // Apply category filter
+    const matchesCategory = categoryFilter === 'all' || booking.tourPackage?.tourCategory === categoryFilter;
+
+    // Apply date filter
+    let matchesDate = true;
+    if (dateFilter !== 'all') {
+      const today = new Date();
+      const bookingDate = new Date(booking.bookingDate);
+      
+      switch (dateFilter) {
+        case 'today':
+          matchesDate = bookingDate.toDateString() === today.toDateString();
+          break;
+        case 'week':
+          const weekAgo = new Date();
+          weekAgo.setDate(today.getDate() - 7);
+          matchesDate = bookingDate >= weekAgo;
+          break;
+        case 'month':
+          const monthAgo = new Date();
+          monthAgo.setMonth(today.getMonth() - 1);
+          matchesDate = bookingDate >= monthAgo;
+          break;
+        case 'year':
+          const yearAgo = new Date();
+          yearAgo.setFullYear(today.getFullYear() - 1);
+          matchesDate = bookingDate >= yearAgo;
+          break;
+        default:
+          break;
+      }
+    }
+
+    // Apply price filter
+    let matchesPrice = true;
+    if (priceFilter !== 'all' && booking.pricing?.finalPrice) {
+      switch (priceFilter) {
+        case 'low':
+          matchesPrice = booking.pricing.finalPrice < 50000;
+          break;
+        case 'medium':
+          matchesPrice = booking.pricing.finalPrice >= 50000 && booking.pricing.finalPrice < 200000;
+          break;
+        case 'high':
+          matchesPrice = booking.pricing.finalPrice >= 200000;
+          break;
+        default:
+          break;
+      }
+    }
+
+    return matchesSearch && matchesStatus && matchesCategory && matchesDate && matchesPrice;
+  });
+
   return (
     <div className="tour-booking-management">
       <div className="content-header">
@@ -87,6 +169,76 @@ const TourBookingManagement = ({
         >
           <i className="fas fa-sync-alt"></i> Refresh
         </button>
+      </div>
+
+      {/* Compact Search and Filter Bar */}
+      <div className="compact-search-filter">
+        <div className="search-input-wrapper">
+          <i className="fas fa-search"></i>
+          <input
+            type="text"
+            placeholder="Search tour bookings..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && (
+            <button onClick={() => setSearchTerm('')} className="clear-btn">
+              <i className="fas fa-times"></i>
+            </button>
+          )}
+        </div>
+        
+        <div className="filter-dropdowns">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="rejected">Rejected</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="completed">Completed</option>
+          </select>
+          
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+          >
+            <option value="all">All Categories</option>
+            <option value="Adventure">Adventure</option>
+            <option value="Pilgrimage">Pilgrimage</option>
+            <option value="Nature">Nature</option>
+            <option value="Cultural">Cultural</option>
+            <option value="Family">Family</option>
+            <option value="Corporate">Corporate</option>
+          </select>
+          
+          <select
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+          >
+            <option value="all">All Time</option>
+            <option value="today">Today</option>
+            <option value="week">7 Days</option>
+            <option value="month">30 Days</option>
+            <option value="year">1 Year</option>
+          </select>
+          
+          <select
+            value={priceFilter}
+            onChange={(e) => setPriceFilter(e.target.value)}
+          >
+            <option value="all">All Prices</option>
+            <option value="low">Under 50K</option>
+            <option value="medium">50K-200K</option>
+            <option value="high">Over 200K</option>
+          </select>
+        </div>
+        
+        <div className="results-info">
+          {filteredTourBookings.length} booking{filteredTourBookings.length !== 1 ? 's' : ''}
+        </div>
       </div>
 
       <div className="bookings-table">
@@ -106,7 +258,7 @@ const TourBookingManagement = ({
             </tr>
           </thead>
           <tbody>
-            {tourBookings.map(booking => (
+            {filteredTourBookings.map(booking => (
               <tr key={booking._id}>
                 <td>
                   <span className="booking-id">

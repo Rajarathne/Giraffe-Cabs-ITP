@@ -24,6 +24,13 @@ const TourPackageManagement = ({
   });
   const [reportData, setReportData] = useState(null);
   const [generatingReport, setGeneratingReport] = useState(false);
+
+  // Search and filter state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [tourTypeFilter, setTourTypeFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [priceFilter, setPriceFilter] = useState('all');
   const [packageData, setPackageData] = useState({
     packageName: '',
     description: '',
@@ -292,6 +299,53 @@ const TourPackageManagement = ({
         : prev.vehicleTypes.filter(type => type !== vehicleType)
     }));
   };
+
+  // Filter tour packages based on search term and filters
+  const filteredTourPackages = tourPackages.filter(pkg => {
+    const searchLower = searchTerm.toLowerCase();
+    
+    // Apply search filter
+    const matchesSearch = !searchTerm || (
+      pkg.packageName?.toLowerCase().includes(searchLower) ||
+      pkg.destination?.toLowerCase().includes(searchLower) ||
+      pkg.description?.toLowerCase().includes(searchLower) ||
+      pkg.tourCategory?.toLowerCase().includes(searchLower) ||
+      pkg.tourType?.toLowerCase().includes(searchLower) ||
+      pkg.pricePerPerson?.toString().includes(searchTerm) ||
+      pkg.tourDays?.toString().includes(searchTerm) ||
+      pkg.minPassengers?.toString().includes(searchTerm) ||
+      pkg.maxPassengers?.toString().includes(searchTerm)
+    );
+
+    // Apply category filter
+    const matchesCategory = categoryFilter === 'all' || pkg.tourCategory === categoryFilter;
+
+    // Apply tour type filter
+    const matchesTourType = tourTypeFilter === 'all' || pkg.tourType === tourTypeFilter;
+
+    // Apply status filter
+    const matchesStatus = statusFilter === 'all' || pkg.status === statusFilter;
+
+    // Apply price filter
+    let matchesPrice = true;
+    if (priceFilter !== 'all' && pkg.pricePerPerson) {
+      switch (priceFilter) {
+        case 'low':
+          matchesPrice = pkg.pricePerPerson < 10000;
+          break;
+        case 'medium':
+          matchesPrice = pkg.pricePerPerson >= 10000 && pkg.pricePerPerson < 50000;
+          break;
+        case 'high':
+          matchesPrice = pkg.pricePerPerson >= 50000;
+          break;
+        default:
+          break;
+      }
+    }
+
+    return matchesSearch && matchesCategory && matchesTourType && matchesStatus && matchesPrice;
+  });
 
 
   const handleImageSubmit = async () => {
@@ -695,6 +749,73 @@ const TourPackageManagement = ({
         </div>
       </div>
 
+      {/* Compact Search and Filter Bar */}
+      <div className="compact-search-filter">
+        <div className="search-input-wrapper">
+          <i className="fas fa-search"></i>
+          <input
+            type="text"
+            placeholder="Search tour packages..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && (
+            <button onClick={() => setSearchTerm('')} className="clear-btn">
+              <i className="fas fa-times"></i>
+            </button>
+          )}
+        </div>
+        
+        <div className="filter-dropdowns">
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+          >
+            <option value="all">All Categories</option>
+            <option value="Adventure">Adventure</option>
+            <option value="Pilgrimage">Pilgrimage</option>
+            <option value="Nature">Nature</option>
+            <option value="Cultural">Cultural</option>
+            <option value="Family">Family</option>
+            <option value="Corporate">Corporate</option>
+          </select>
+          
+          <select
+            value={tourTypeFilter}
+            onChange={(e) => setTourTypeFilter(e.target.value)}
+          >
+            <option value="all">All Types</option>
+            <option value="One-day">One-day</option>
+            <option value="Multi-day">Multi-day</option>
+            <option value="Seasonal">Seasonal</option>
+          </select>
+          
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="seasonal">Seasonal</option>
+          </select>
+          
+          <select
+            value={priceFilter}
+            onChange={(e) => setPriceFilter(e.target.value)}
+          >
+            <option value="all">All Prices</option>
+            <option value="low">Under 10K</option>
+            <option value="medium">10K-50K</option>
+            <option value="high">Over 50K</option>
+          </select>
+        </div>
+        
+        <div className="results-info">
+          {filteredTourPackages.length} package{filteredTourPackages.length !== 1 ? 's' : ''}
+        </div>
+      </div>
+
       <div className="tour-packages-table">
         <table>
           <thead>
@@ -711,9 +832,9 @@ const TourPackageManagement = ({
             </tr>
           </thead>
           <tbody>
-            {tourPackages.map(pkg => (
+            {filteredTourPackages.map(pkg => (
               <tr key={pkg._id}>
-                <td>{pkg.packageName}</td>
+                <td title={pkg.packageName}>{pkg.packageName}</td>
                 <td>{pkg.destination}</td>
                 <td>
                   <span className={`category-badge category-${pkg.tourCategory.toLowerCase()}`}>
@@ -734,12 +855,14 @@ const TourPackageManagement = ({
                     <button 
                       className="btn btn-sm btn-primary"
                       onClick={() => handleEdit(pkg)}
+                      title="Edit Package"
                     >
                       <i className="fas fa-edit"></i>
                     </button>
                     <button 
                       className="btn btn-sm btn-danger"
                       onClick={() => handleDelete(pkg._id)}
+                      title="Delete Package"
                     >
                       <i className="fas fa-trash"></i>
                     </button>
