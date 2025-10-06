@@ -44,7 +44,12 @@ router.get('/reports/vehicles', protect, generateVehicleUtilizationReport);
 // Specific booking routes (must come before generic /:id route)
 router.put('/:id/status', protect, updateBookingStatus);
 router.put('/:id/pricing', (req, res, next) => {
-  console.log('Pricing route hit for booking ID:', req.params.id);
+  console.log('=== PRICING ROUTE HIT ===');
+  console.log('Route:', req.route?.path);
+  console.log('Method:', req.method);
+  console.log('Params:', req.params);
+  console.log('Body:', req.body);
+  console.log('========================');
   next();
 }, protect, updateBookingPricing);
 router.get('/:id/invoice', protect, generateBookingInvoice);

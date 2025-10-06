@@ -19,7 +19,8 @@ const Booking = () => {
     distance: 0,
     totalPrice: 0,
     additionalNotes: '',
-    serviceDetails: {}
+    serviceDetails: {},
+    paymentMethod: 'cash' // Default to cash payment
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -245,13 +246,14 @@ const Booking = () => {
 
       switch (selectedService) {
         case 'wedding':
-          // Wedding service - fixed price regardless of distance
-          estimatedPrice = service.basePrice;
+          // Wedding service - fixed price 50000 per day for all vehicle types
+          const days = bookingData.serviceDetails.days || 1;
+          estimatedPrice = 50000 * days;
           break;
           
         case 'airport':
-          // Airport transfer - fixed price
-          estimatedPrice = service.basePrice;
+          // Airport transfer - distance based pricing
+          estimatedPrice = distance * 100; // LKR 100 per km for airport
           break;
           
         case 'cargo':
@@ -284,7 +286,7 @@ const Booking = () => {
     };
 
     calculateEstimatedPrice();
-  }, [selectedService, bookingData.serviceDetails, bookingData.passengers, bookingData.distance, services]);
+  }, [selectedService, bookingData.serviceDetails, bookingData.serviceDetails.days, bookingData.passengers, bookingData.distance, services]);
 
 
   // Estimate distance using known routes in Sri Lanka
@@ -415,12 +417,23 @@ const Booking = () => {
         console.error('Failed to download invoice:', invoiceError);
       }
 
-      // Navigate to payment page with booking data
-      navigate('/payment', {
-        state: {
-          bookingData: newBooking
-        }
-      });
+      // Navigate based on payment method
+      if (bookingData.paymentMethod === 'card') {
+        // Navigate to payment page for card payments
+        navigate('/payment', {
+          state: {
+            bookingData: newBooking
+          }
+        });
+      } else {
+        // For cash payments, navigate to success page directly
+        navigate('/booking-success', {
+          state: {
+            bookingData: newBooking,
+            message: 'Your cash payment booking has been submitted! Admin will set the final price and confirm your booking.'
+          }
+        });
+      }
 
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to submit booking request');
@@ -518,7 +531,7 @@ const Booking = () => {
                   <option value="all">All Prices</option>
                   <option value="low">Low (≤ LKR 2,000)</option>
                   <option value="medium">Medium (LKR 2,001 - 5,000)</option>
-                  <option value="high">High (> LKR 5,000)</option>
+                  <option value="high">High (&gt; LKR 5,000)</option>
                 </select>
               </div>
               
@@ -871,6 +884,42 @@ const Booking = () => {
                 </div>
 
                 <div className="form-section">
+                  <h3>Payment Method</h3>
+                  <div className="form-group">
+                    <label>Choose Payment Method</label>
+                    <div className="payment-method-options">
+                      <label className={`payment-method-option ${bookingData.paymentMethod === 'cash' ? 'selected' : ''}`}>
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value="cash"
+                          checked={bookingData.paymentMethod === 'cash'}
+                          onChange={handleInputChange}
+                        />
+                        <div className="method-info">
+                          <span className="method-name">💵 Cash Payment</span>
+                          <span className="method-desc">Pay when service is provided. Admin will set final price.</span>
+                        </div>
+                      </label>
+
+                      <label className={`payment-method-option ${bookingData.paymentMethod === 'card' ? 'selected' : ''}`}>
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value="card"
+                          checked={bookingData.paymentMethod === 'card'}
+                          onChange={handleInputChange}
+                        />
+                        <div className="method-info">
+                          <span className="method-name">💳 Card Payment</span>
+                          <span className="method-desc">Pay securely with credit/debit card now.</span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="form-section">
                   <h3>Additional Information</h3>
                   <div className="form-group">
                     <label htmlFor="additionalNotes">Additional Notes</label>
@@ -903,12 +952,28 @@ const Booking = () => {
                           {selectedService === 'wedding' ? (
                             <div className="rate-item">
                               <span>Wedding Service</span>
-                              <span>Fixed Price: LKR {bookingData.totalPrice.toLocaleString()}</span>
+                              <span>
+                                {bookingData.serviceDetails.days ? (
+                                  <>
+                                    {bookingData.serviceDetails.days} day(s) × LKR 50,000 = LKR {bookingData.totalPrice.toLocaleString()}
+                                  </>
+                                ) : (
+                                  'Enter number of days to see price'
+                                )}
+                              </span>
                             </div>
                           ) : selectedService === 'airport' ? (
                             <div className="rate-item">
                               <span>Airport Transfer</span>
-                              <span>Fixed Price: LKR {bookingData.totalPrice.toLocaleString()}</span>
+                              <span>
+                                {bookingData.distance > 0 ? (
+                                  <>
+                                    {bookingData.distance} km × 100 = LKR {bookingData.totalPrice.toLocaleString()}
+                                  </>
+                                ) : (
+                                  'Enter distance to see price'
+                                )}
+                              </span>
                             </div>
                           ) : (
                             <div className="rate-item">
@@ -952,7 +1017,14 @@ const Booking = () => {
 
                   <div className="pricing-note">
                     <i className="fas fa-info-circle"></i>
-                    <span>This is an estimated price based on your inputs. Admin will verify the distance and confirm the final price after booking submission.</span>
+                    <span>
+                      {selectedService === 'wedding' 
+                        ? 'Wedding service: Fixed rate LKR 50,000 per day for all vehicle types.'
+                        : bookingData.paymentMethod === 'cash' 
+                          ? 'This is an estimated price. Admin will verify the distance and set the final price after booking submission.'
+                          : 'This is an estimated price. Admin will verify the distance and confirm the final price before payment.'
+                      }
+                    </span>
                   </div>
                 </div>
 
@@ -969,8 +1041,8 @@ const Booking = () => {
                       </>
                     ) : (
                       <>
-                        <i className="fas fa-paper-plane"></i>
-                        Submit Booking Request
+                        <i className={bookingData.paymentMethod === 'card' ? 'fas fa-credit-card' : 'fas fa-paper-plane'}></i>
+                        {bookingData.paymentMethod === 'card' ? 'Proceed to Payment' : 'Submit Booking Request'}
                       </>
                     )}
                   </button>
@@ -985,4 +1057,3 @@ const Booking = () => {
 };
 
 export default Booking;
-

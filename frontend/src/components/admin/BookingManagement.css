@@ -269,7 +269,8 @@
 .bookings-table {
   background: #ffffff;
   border-radius: 12px;
-  overflow: hidden;
+  overflow-x: auto; /* keep action buttons inside and allow scroll if needed */
+  overflow-y: visible;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
   border: 1px solid #e8f4fd;
   position: relative;
@@ -326,7 +327,7 @@
 
 .bookings-table td:last-child {
   padding: 0.4rem 0.5rem;
-  min-width: 160px;
+  min-width: 260px; /* wider space for inline buttons */
   vertical-align: top;
 }
 
@@ -438,7 +439,8 @@
   flex-wrap: wrap;
   align-items: center;
   min-height: 40px;
-  justify-content: flex-start;
+  justify-content: flex-start; /* keep buttons aligned to the left inside the cell */
+  max-width: 100%;
 }
 
 .action-buttons .btn {
@@ -453,7 +455,7 @@
   overflow: hidden;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   white-space: nowrap;
-  flex-shrink: 0;
+  flex: 0 0 auto;
   min-width: 60px;
   display: inline-flex;
   align-items: center;
@@ -584,7 +586,7 @@
   }
   
   .bookings-table {
-    overflow-x: auto;
+    overflow-x: visible;
   }
   
   .bookings-table table {
@@ -924,8 +926,7 @@
   padding: 2.5rem;
   max-width: 500px;
   width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
+  overflow-y: visible;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   position: relative;
   animation: modalSlideIn 0.3s ease-out;
@@ -1202,7 +1203,7 @@
   }
   
   .bookings-table {
-    overflow-x: auto;
+    overflow-x: visible;
   }
   
   .bookings-table table {

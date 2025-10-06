@@ -107,17 +107,32 @@ const updateBookingStatus = async (req, res) => {
 // Update Booking Pricing (Admin only)
 const updateBookingPricing = async (req, res) => {
   try {
-    console.log('updateBookingPricing called with:', req.params.id, req.body);
+    console.log('=== PRICING UPDATE REQUEST ===');
+    console.log('Request URL:', req.url);
+    console.log('Request Method:', req.method);
+    console.log('Request Params:', req.params);
+    console.log('Request Body:', req.body);
+    console.log('User:', req.user);
+    console.log('================================');
     
     if (req.user.role !== 'admin') {
+      console.log('Access denied - user role:', req.user?.role);
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    const { adminCalculatedDistance, pricePerKm, adminSetPrice, isPriceConfirmed } = req.body;
+    const { adminCalculatedDistance, pricePerKm, adminSetPrice, isPriceConfirmed, weddingDays } = req.body;
     const booking = await Booking.findById(req.params.id);
     
     if (!booking) {
       return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    // Handle wedding service pricing
+    if (booking.serviceType === 'wedding' && weddingDays !== undefined) {
+      booking.serviceDetails = {
+        ...booking.serviceDetails,
+        days: weddingDays
+      };
     }
 
     if (adminCalculatedDistance !== undefined) booking.adminCalculatedDistance = adminCalculatedDistance;

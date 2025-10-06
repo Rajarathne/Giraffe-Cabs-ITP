@@ -7,7 +7,8 @@ const BookingManagement = ({
   loading,
   onUpdateBookingStatus,
   onDeleteBooking,
-  onGenerateBookingReport
+  onGenerateBookingReport,
+  onRefreshData
 }) => {
   const [showCashPaymentModal, setShowCashPaymentModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
@@ -17,6 +18,7 @@ const BookingManagement = ({
     adminCalculatedDistance: '',
     pricePerKm: '',
     adminSetPrice: '',
+    weddingDays: '',
     isPriceConfirmed: false
   });
 
@@ -62,8 +64,8 @@ const BookingManagement = ({
       filtered = filtered.filter(booking => booking.paymentStatus === paymentStatusFilter);
     }
 
-    // Show only cash payment bookings in Booking Management
-    filtered = filtered.filter(booking => booking.paymentMethod === 'cash');
+    // Show all bookings in Booking Management (both cash and card)
+    // filtered = filtered.filter(booking => booking.paymentMethod === 'cash');
 
     // Date filter
     if (dateFilter !== 'all') {
@@ -148,42 +150,71 @@ const BookingManagement = ({
       setSelectedBooking(null);
       setCashAmount('');
       
-      // Refresh the page to show updated data
-      window.location.reload();
+      // Refresh the data to show updated information
+      if (onRefreshData) {
+        onRefreshData();
+      }
     } catch (error) {
       alert('Failed to confirm cash payment: ' + (error.response?.data?.message || error.message));
     }
   };
 
   const handlePricingUpdate = async () => {
-    if (!pricingData.adminCalculatedDistance || !pricingData.pricePerKm || !pricingData.adminSetPrice) {
-      alert('Please fill in all pricing fields');
-      return;
+    // Check if it's wedding service
+    if (selectedBooking?.serviceType === 'wedding') {
+      if (!pricingData.weddingDays || !pricingData.adminSetPrice) {
+        alert('Please fill in all pricing fields');
+        return;
+      }
+    } else {
+      if (!pricingData.adminCalculatedDistance || !pricingData.pricePerKm || !pricingData.adminSetPrice) {
+        alert('Please fill in all pricing fields');
+        return;
+      }
     }
 
     try {
       const token = localStorage.getItem('authToken');
       const url = `/api/bookings/${selectedBooking._id}/pricing`;
-      const payload = {
-        adminCalculatedDistance: parseFloat(pricingData.adminCalculatedDistance),
-        pricePerKm: parseFloat(pricingData.pricePerKm),
-        adminSetPrice: parseFloat(pricingData.adminSetPrice),
-        isPriceConfirmed: true
-      };
+      
+      console.log('Pricing update request details:', {
+        url: url,
+        bookingId: selectedBooking._id,
+        serviceType: selectedBooking?.serviceType,
+        pricingData: pricingData
+      });
+      
+      let payload;
+      if (selectedBooking?.serviceType === 'wedding') {
+        payload = {
+          weddingDays: parseInt(pricingData.weddingDays),
+          adminSetPrice: parseFloat(pricingData.adminSetPrice),
+          isPriceConfirmed: true
+        };
+      } else {
+        payload = {
+          adminCalculatedDistance: parseFloat(pricingData.adminCalculatedDistance),
+          pricePerKm: parseFloat(pricingData.pricePerKm),
+          adminSetPrice: parseFloat(pricingData.adminSetPrice),
+          isPriceConfirmed: true
+        };
+      }
       
       console.log('Making pricing update request to:', url);
       console.log('Payload:', payload);
       
-      await axios.put(url, payload, {
+      const pricingResponse = await axios.put(url, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      console.log('Pricing update response:', pricingResponse.data);
 
       // Update booking status to confirmed
-      await axios.put(`/api/bookings/${selectedBooking._id}`, {
+      const statusResponse = await axios.put(`/api/bookings/${selectedBooking._id}/status`, {
         status: 'confirmed'
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      console.log('Status update response:', statusResponse.data);
 
       // Create payment record for cash payments when admin confirms price
       if (selectedBooking.paymentMethod === 'cash') {
@@ -192,7 +223,7 @@ const BookingManagement = ({
             bookingId: selectedBooking._id,
             amount: parseFloat(pricingData.adminSetPrice),
             paymentMethod: 'cash',
-            status: 'pending', // Pending until driver collects cash
+            status: 'completed', // Completed when admin confirms price
             customerName: selectedBooking.user?.firstName + ' ' + selectedBooking.user?.lastName,
             customerEmail: selectedBooking.user?.email,
             customerPhone: selectedBooking.user?.phone
@@ -212,11 +243,14 @@ const BookingManagement = ({
         adminCalculatedDistance: '',
         pricePerKm: '',
         adminSetPrice: '',
+        weddingDays: '',
         isPriceConfirmed: false
       });
       
-      // Refresh the page to show updated data
-      window.location.reload();
+      // Refresh the data to show updated information
+      if (onRefreshData) {
+        onRefreshData();
+      }
     } catch (error) {
       console.error('Pricing update error:', error);
       console.error('Error response:', error.response);
@@ -263,8 +297,8 @@ const BookingManagement = ({
   return (
     <div className="bookings-content">
       <div className="content-header">
-        <h2>💵 Cash Payment Booking Management</h2>
-        <p className="booking-note">Showing only cash payment bookings. Card payments are managed in Payment Management.</p>
+        <h2>📋 All Booking Management</h2>
+        <p className="booking-note">Manage all bookings (cash and card payments). Set prices, confirm, edit, or delete bookings.</p>
       </div>
 
       {/* Search and Filter Section */}
@@ -515,27 +549,6 @@ const BookingManagement = ({
         <h3><i className="fas fa-calendar-check"></i> Booking Reports</h3>
         <div className="reports-grid">
           <div className="report-card">
-            <i className="fas fa-file-pdf"></i>
-            <h4>Daily Bookings</h4>
-            <p>Generate daily booking report</p>
-            <button 
-              className="btn btn-primary" 
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Daily report button clicked');
-                if (onGenerateBookingReport) {
-                  onGenerateBookingReport('daily');
-                } else {
-                  console.error('onGenerateBookingReport function is not defined');
-                }
-              }}
-              disabled={loading}
-            >
-              {loading ? 'Generating...' : 'Generate PDF'}
-            </button>
-          </div>
-          <div className="report-card">
             <i className="fas fa-file-excel"></i>
             <h4>Monthly Bookings</h4>
             <p>Export monthly booking data</p>
@@ -711,66 +724,111 @@ const BookingManagement = ({
             )}
 
             <form onSubmit={(e) => { e.preventDefault(); handlePricingUpdate(); }}>
-              <div className="form-group">
-                <label htmlFor="adminCalculatedDistance">Admin Calculated Distance (km)</label>
-                <input
-                  type="number"
-                  id="adminCalculatedDistance"
-                  value={pricingData.adminCalculatedDistance}
-                  onChange={(e) => setPricingData(prev => ({
-                    ...prev,
-                    adminCalculatedDistance: e.target.value
-                  }))}
-                  placeholder="Enter actual distance..."
-                  min="0"
-                  step="0.1"
-                  required
-                />
-              </div>
+              {selectedBooking?.serviceType === 'wedding' ? (
+                // Wedding service - only ask for days and total price
+                <>
+                  <div className="form-group">
+                    <label htmlFor="weddingDays">Number of Days</label>
+                    <input
+                      type="number"
+                      id="weddingDays"
+                      value={pricingData.weddingDays || selectedBooking.serviceDetails?.days || ''}
+                      onChange={(e) => {
+                        const days = parseInt(e.target.value) || 0;
+                        const totalPrice = days * 50000;
+                        setPricingData(prev => ({
+                          ...prev,
+                          weddingDays: days,
+                          adminSetPrice: totalPrice
+                        }));
+                      }}
+                      min="1"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="adminSetPrice">Total Price (LKR)</label>
+                    <input
+                      type="number"
+                      id="adminSetPrice"
+                      value={pricingData.adminSetPrice}
+                      onChange={(e) => setPricingData(prev => ({
+                        ...prev,
+                        adminSetPrice: e.target.value
+                      }))}
+                      placeholder="Enter total price..."
+                      min="0"
+                      step="0.01"
+                      required
+                    />
+                    <small className="form-text">Wedding service: LKR 50,000 per day</small>
+                  </div>
+                </>
+              ) : (
+                // Other services - distance based pricing
+                <>
+                  <div className="form-group">
+                    <label htmlFor="adminCalculatedDistance">Admin Calculated Distance (km)</label>
+                    <input
+                      type="number"
+                      id="adminCalculatedDistance"
+                      value={pricingData.adminCalculatedDistance}
+                      onChange={(e) => setPricingData(prev => ({
+                        ...prev,
+                        adminCalculatedDistance: e.target.value
+                      }))}
+                      placeholder="Enter actual distance..."
+                      min="0"
+                      step="0.1"
+                      required
+                    />
+                  </div>
 
-              <div className="form-group">
-                <label htmlFor="pricePerKm">Price per KM (LKR)</label>
-                <input
-                  type="number"
-                  id="pricePerKm"
-                  value={pricingData.pricePerKm}
-                  onChange={(e) => setPricingData(prev => ({
-                    ...prev,
-                    pricePerKm: e.target.value
-                  }))}
-                  placeholder="Enter rate per km..."
-                  min="0"
-                  step="0.01"
-                  required
-                />
-              </div>
+                  <div className="form-group">
+                    <label htmlFor="pricePerKm">Price per KM (LKR)</label>
+                    <input
+                      type="number"
+                      id="pricePerKm"
+                      value={pricingData.pricePerKm}
+                      onChange={(e) => setPricingData(prev => ({
+                        ...prev,
+                        pricePerKm: e.target.value
+                      }))}
+                      placeholder="Enter rate per km..."
+                      min="0"
+                      step="0.01"
+                      required
+                    />
+                  </div>
 
-              <div className="form-group">
-                <label htmlFor="adminSetPrice">Total Price (LKR)</label>
-                <div className="price-input-group">
-                  <input
-                    type="number"
-                    id="adminSetPrice"
-                    value={pricingData.adminSetPrice}
-                    onChange={(e) => setPricingData(prev => ({
-                      ...prev,
-                      adminSetPrice: e.target.value
-                    }))}
-                    placeholder="Enter total price..."
-                    min="0"
-                    step="0.01"
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={calculatePriceFromDistance}
-                    disabled={!pricingData.adminCalculatedDistance || !pricingData.pricePerKm}
-                  >
-                    <i className="fas fa-calculator"></i> Calculate
-                  </button>
-                </div>
-              </div>
+                  <div className="form-group">
+                    <label htmlFor="adminSetPrice">Total Price (LKR)</label>
+                    <div className="price-input-group">
+                      <input
+                        type="number"
+                        id="adminSetPrice"
+                        value={pricingData.adminSetPrice}
+                        onChange={(e) => setPricingData(prev => ({
+                          ...prev,
+                          adminSetPrice: e.target.value
+                        }))}
+                        placeholder="Enter total price..."
+                        min="0"
+                        step="0.01"
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={calculatePriceFromDistance}
+                        disabled={!pricingData.adminCalculatedDistance || !pricingData.pricePerKm}
+                      >
+                        <i className="fas fa-calculator"></i> Calculate
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
 
               <div className="form-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowPricingModal(false)}>
