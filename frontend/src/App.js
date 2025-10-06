@@ -11,10 +11,13 @@ import VehicleList from './components/VehicleList';
 import Profile from './components/Profile';
 import Booking from './components/Booking';
 import Payment from './components/Payment';
+import BookingSuccess from './components/BookingSuccess';
 import TourPackages from './components/TourPackages';
 import VehicleProviderAuth from './components/VehicleProviderAuth';
 import VehicleProviderDashboard from './components/VehicleProviderDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import Login from './components/Login';
+import Signup from './components/Signup';
 
 function App() {
   return (
@@ -22,6 +25,8 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route
             path="/home"
             element={
@@ -67,6 +72,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Payment />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/booking-success"
+            element={
+              <ProtectedRoute>
+                <BookingSuccess />
               </ProtectedRoute>
             }
           />
