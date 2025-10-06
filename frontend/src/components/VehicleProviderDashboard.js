@@ -7,7 +7,6 @@ const VehicleProviderDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [vehicleProvider, setVehicleProvider] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [showProfileModal, setShowProfileModal] = useState(false);
   const [showVehicleRequestModal, setShowVehicleRequestModal] = useState(false);
   const [vehicleRequestData, setVehicleRequestData] = useState({
     vehicleNumber: '',
@@ -25,7 +24,7 @@ const VehicleProviderDashboard = () => {
     features: []
   });
   const [vehicleRequests, setVehicleRequests] = useState([]);
-  const [companyRates, setCompanyRates] = useState({
+  const [companyRates] = useState({
     van: { daily: 8000, monthly: 200000 },
     bus: { daily: 12000, monthly: 300000 },
     car: { daily: 5000, monthly: 120000 },
@@ -81,7 +80,7 @@ const VehicleProviderDashboard = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('vehicleProviderToken');
-      const response = await axios.post('/api/vehicle-provider/vehicle-requests', vehicleRequestData, {
+      await axios.post('/api/vehicle-provider/vehicle-requests', vehicleRequestData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert('Vehicle rental request submitted successfully!');
@@ -284,7 +283,7 @@ const VehicleProviderDashboard = () => {
               <h2>My Profile</h2>
               <button 
                 className="btn btn-primary"
-                onClick={() => setShowProfileModal(true)}
+                onClick={() => {/* Profile modal functionality removed */}}
               >
                 <i className="fas fa-edit"></i>
                 Edit Profile
