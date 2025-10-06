@@ -1357,10 +1357,6 @@ const AdminDashboard = () => {
             <i className={`fas ${theme === 'light' ? 'fa-moon' : 'fa-sun'}`}></i>
             <span>{theme === 'light' ? 'Dark' : 'Light'}</span>
           </button>
-          <div className="user-info">
-            <i className="fas fa-user-circle"></i>
-            <span>{user?.name || 'Admin User'}</span>
-          </div>
           <button 
             className="logout-btn"
             onClick={handleLogout}
@@ -1432,6 +1428,7 @@ const AdminDashboard = () => {
             onUpdateBookingStatus={handleUpdateBookingStatus}
             onDeleteBooking={handleDeleteBooking}
             onGenerateBookingReport={generateBookingReport}
+            onRefreshData={loadDashboardData}
           />
         )}
         {activeTab === 'payments' && (
@@ -1441,6 +1438,7 @@ const AdminDashboard = () => {
             onUpdatePaymentStatus={handleUpdatePaymentStatus}
             onDeletePayment={handleDeletePayment}
             onEditPayment={handleEditPayment}
+            onUpdateBookingStatus={handleUpdateBookingStatus}
           />
         )}
         {activeTab === 'financial' && (
@@ -1496,6 +1494,10 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
+
+
+
 
 
 

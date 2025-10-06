@@ -608,15 +608,16 @@
 
 .booking-details {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* wider detail columns to prevent cramped text */
+  gap: 0.75rem;
   margin-bottom: 1rem;
 }
 
 .detail-row {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto 1fr; /* label then value */
   align-items: center;
+  column-gap: 0.75rem;
   padding: 0.25rem 0;
 }
 
@@ -624,11 +625,14 @@
   font-weight: 600;
   color: #6c757d;
   font-size: 0.9rem;
+  white-space: nowrap; /* keep label on one line */
 }
 
 .detail-row span:last-child {
   color: #495057;
   font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .booking-actions {

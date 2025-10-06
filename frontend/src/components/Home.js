@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Home.css';
@@ -47,9 +47,6 @@ const Home = () => {
       address: currentUser.address,
       password: ''
     });
-    loadVehicles();
-    loadRentals();
-    loadAvailableVehiclesForRental();
   }, [navigate]);
 
   const loadVehicles = async () => {
@@ -70,14 +67,20 @@ const Home = () => {
     }
   };
 
-  const loadAvailableVehiclesForRental = async () => {
+  const loadAvailableVehiclesForRental = useCallback(async () => {
     try {
       const availableVehiclesData = await loadAvailableVehicles();
       setAvailableVehicles(availableVehiclesData);
     } catch (error) {
       console.error('Error loading available vehicles for rental:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadVehicles();
+    loadRentals();
+    loadAvailableVehiclesForRental();
+  }, [navigate, loadAvailableVehiclesForRental]);
 
   const loadRentals = async () => {
     try {

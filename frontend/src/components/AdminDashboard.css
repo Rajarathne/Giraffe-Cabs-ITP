@@ -362,7 +362,8 @@
   background: #ffffff;
   position: relative;
   z-index: 1;
-  margin-top: 130px;
+  margin-top: 0;
+  padding-top: 0;
   overflow-y: auto;
 }
 
@@ -391,37 +392,38 @@
   align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem 2rem;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+  border: 1px solid #dc2626;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+  color: #ffffff;
 }
 
 .dashboard-title {
   margin: 0;
   font-size: 1.75rem;
   font-weight: 700;
-  color: #1E93AB;
+  color: #ffffff;
 }
 
 .dashboard-time {
   text-align: right;
-  background: rgba(30, 147, 171, 0.05);
+  background: rgba(255, 255, 255, 0.1);
   padding: 1rem 1.5rem;
   border-radius: 12px;
-  border: 1px solid rgba(30, 147, 171, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .current-time {
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 0.25rem;
-  color: #1E93AB;
+  color: #ffffff;
 }
 
 .current-date {
   font-size: 0.9rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.8);
   font-weight: 500;
 }
 
@@ -1191,6 +1193,7 @@
   margin-left: 280px;
   min-height: 100vh;
   padding: 2rem;
+  padding-top: 0;
 }
 
 .dashboard-content {
@@ -1271,18 +1274,19 @@
   transform: translateY(-1px);
 }
 
-/* Dashboard header theme support */
+/* Dashboard header theme support - force red background and white text */
 .dashboard-header {
-  background: var(--bg-primary);
-  color: var(--text-primary);
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%) !important;
+  border: 1px solid #dc2626;
+  color: #ffffff !important;
 }
 
 .dashboard-header h1 {
-  color: var(--text-primary);
+  color: #ffffff !important;
 }
 
 .current-time {
-  color: var(--text-secondary);
+  color: #ffffff !important;
 }
 
 /* Content header theme support */

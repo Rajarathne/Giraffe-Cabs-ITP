@@ -1,0 +1,23 @@
+@import './Login.css';
+
+/* Overrides/additions specific to signup */
+.auth-card { max-width: 640px; }
+.auth-form .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+.provider-fields { border-top: 1px dashed #e2e8f0; padding-top: 0.75rem; margin-top: 0.5rem; }
+
+@media (max-width: 640px) {
+  .auth-form .form-row { grid-template-columns: 1fr; }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
