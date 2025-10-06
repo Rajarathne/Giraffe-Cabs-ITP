@@ -23,6 +23,13 @@ const VehicleManagement = ({
   const [touchedFields, setTouchedFields] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
 
+  // Search and filter state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [vehicleTypeFilter, setVehicleTypeFilter] = useState('all');
+  const [fuelTypeFilter, setFuelTypeFilter] = useState('all');
+  const [transmissionFilter, setTransmissionFilter] = useState('all');
+  const [rateFilter, setRateFilter] = useState('all');
+
   // Validation functions
   const validateVehicleNumber = useCallback((value) => {
     if (!value || value.trim() === '') {
@@ -259,6 +266,52 @@ const VehicleManagement = ({
   const showFieldError = (fieldName) => {
     return touchedFields[fieldName] && validationErrors[fieldName];
   };
+
+  // Filter vehicles based on search term and filters
+  const filteredVehicles = vehicles.filter(vehicle => {
+    const searchLower = searchTerm.toLowerCase();
+    
+    // Apply search filter
+    const matchesSearch = !searchTerm || (
+      vehicle.vehicleNumber?.toLowerCase().includes(searchLower) ||
+      vehicle.brand?.toLowerCase().includes(searchLower) ||
+      vehicle.model?.toLowerCase().includes(searchLower) ||
+      vehicle.color?.toLowerCase().includes(searchLower) ||
+      vehicle.description?.toLowerCase().includes(searchLower) ||
+      vehicle.dailyRate?.toString().includes(searchTerm) ||
+      vehicle.capacity?.toString().includes(searchTerm) ||
+      vehicle.year?.toString().includes(searchTerm)
+    );
+
+    // Apply vehicle type filter
+    const matchesVehicleType = vehicleTypeFilter === 'all' || vehicle.vehicleType === vehicleTypeFilter;
+
+    // Apply fuel type filter
+    const matchesFuelType = fuelTypeFilter === 'all' || vehicle.fuelType === fuelTypeFilter;
+
+    // Apply transmission filter
+    const matchesTransmission = transmissionFilter === 'all' || vehicle.transmission === transmissionFilter;
+
+    // Apply rate filter
+    let matchesRate = true;
+    if (rateFilter !== 'all' && vehicle.dailyRate) {
+      switch (rateFilter) {
+        case 'low':
+          matchesRate = vehicle.dailyRate < 5000;
+          break;
+        case 'medium':
+          matchesRate = vehicle.dailyRate >= 5000 && vehicle.dailyRate < 15000;
+          break;
+        case 'high':
+          matchesRate = vehicle.dailyRate >= 15000;
+          break;
+        default:
+          break;
+      }
+    }
+
+    return matchesSearch && matchesVehicleType && matchesFuelType && matchesTransmission && matchesRate;
+  });
   
   return (
     <div className="vehicles-content">
@@ -281,8 +334,74 @@ const VehicleManagement = ({
         </button>
       </div>
 
+      {/* Compact Search and Filter Bar */}
+      <div className="compact-search-filter">
+        <div className="search-input-wrapper">
+          <i className="fas fa-search"></i>
+          <input
+            type="text"
+            placeholder="Search vehicles..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && (
+            <button onClick={() => setSearchTerm('')} className="clear-btn">
+              <i className="fas fa-times"></i>
+            </button>
+          )}
+        </div>
+        
+        <div className="filter-dropdowns">
+          <select
+            value={vehicleTypeFilter}
+            onChange={(e) => setVehicleTypeFilter(e.target.value)}
+          >
+            <option value="all">All Types</option>
+            <option value="bus">Bus</option>
+            <option value="van">Van</option>
+            <option value="car">Car</option>
+            <option value="bike">Bike</option>
+            <option value="lorry">Lorry</option>
+          </select>
+          
+          <select
+            value={fuelTypeFilter}
+            onChange={(e) => setFuelTypeFilter(e.target.value)}
+          >
+            <option value="all">All Fuel</option>
+            <option value="petrol">Petrol</option>
+            <option value="diesel">Diesel</option>
+            <option value="hybrid">Hybrid</option>
+            <option value="electric">Electric</option>
+          </select>
+          
+          <select
+            value={transmissionFilter}
+            onChange={(e) => setTransmissionFilter(e.target.value)}
+          >
+            <option value="all">All Trans</option>
+            <option value="manual">Manual</option>
+            <option value="automatic">Auto</option>
+          </select>
+          
+          <select
+            value={rateFilter}
+            onChange={(e) => setRateFilter(e.target.value)}
+          >
+            <option value="all">All Rates</option>
+            <option value="low">Under 5K</option>
+            <option value="medium">5K-15K</option>
+            <option value="high">Over 15K</option>
+          </select>
+        </div>
+        
+        <div className="results-info">
+          {filteredVehicles.length} vehicle{filteredVehicles.length !== 1 ? 's' : ''}
+        </div>
+      </div>
+
       <div className="vehicles-grid">
-        {vehicles && vehicles.length > 0 ? vehicles.map(vehicle => (
+        {filteredVehicles && filteredVehicles.length > 0 ? filteredVehicles.map(vehicle => (
           <div key={vehicle._id} className="vehicle-card">
             <div className="vehicle-image">
               {(() => {
@@ -394,8 +513,8 @@ const VehicleManagement = ({
         )) : (
           <div className="no-vehicles-message">
             <i className="fas fa-car"></i>
-            <h3>No vehicles found</h3>
-            <p>Click "Add New Vehicle" to add your first vehicle.</p>
+            <h3>{vehicles.length === 0 ? 'No vehicles found' : 'No matching vehicles found'}</h3>
+            <p>{vehicles.length === 0 ? 'Click "Add New Vehicle" to add your first vehicle.' : 'Try adjusting your search terms or filters.'}</p>
           </div>
         )}
       </div>
