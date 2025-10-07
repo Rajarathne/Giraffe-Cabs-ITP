@@ -306,6 +306,25 @@ const VehicleList = () => {
             <i className="fas fa-car"></i>
             <span>Giraffe Cabs</span>
           </div>
+          <div className="nav-menu">
+            <a href="/#home" className="nav-link">Home</a>
+            <a href="/#services" className="nav-link">Services</a>
+            <a href="/#about" className="nav-link">About Us</a>
+            <a href="/#fleet" className="nav-link">Our Fleet</a>
+            <a href="/#contact" className="nav-link">Contact Us</a>
+            <button 
+              className="btn btn-primary nav-book-btn"
+              onClick={() => navigate('/tour-packages')}
+            >
+              <i className="fas fa-map-marked-alt"></i> Tour Packages
+            </button>
+            <button 
+              className="btn btn-primary nav-book-btn"
+              onClick={() => navigate('/booking')}
+            >
+              <i className="fas fa-calendar-plus"></i> Book Now
+            </button>
+          </div>
           <div className="nav-actions">
             <div className="profile-dropdown">
               <button className="profile-btn" onClick={toggleProfileDropdown}>

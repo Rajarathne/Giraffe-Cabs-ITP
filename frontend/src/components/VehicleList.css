@@ -80,6 +80,33 @@
   visibility: visible !important;
 }
 
+.vehicle-list-page .nav-menu {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.vehicle-list-page .nav-link {
+  color: rgba(255, 255, 255, 0.95);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+}
+
+.vehicle-list-page .nav-link:hover {
+  background: rgba(247, 170, 0, 0.1);
+  border-color: rgba(247, 170, 0, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(247, 170, 0, 0.2);
+}
+
 .vehicle-list-page .nav-logo:hover {
   transform: translateY(-1px);
   text-shadow: 0 4px 12px rgba(247, 170, 0, 0.6);
@@ -345,18 +372,24 @@
 .page-header {
   text-align: center;
   margin-bottom: 3rem;
+  background: linear-gradient(135deg, #235784 0%, #40A8C4 100%);
+  border: 1px solid #235784;
+  color: #ffffff;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(35, 87, 132, 0.15);
 }
 
 .page-header h1 {
-  color: #1f2937;
+  color: #ffffff;
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
-  text-shadow: none;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 
 .page-header p {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.95);
   font-size: 1.1rem;
   font-weight: 400;
 }
