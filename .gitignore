@@ -1,8 +1,52 @@
-
+# Project docs to ignore
 EMAIL_SETUP_GUIDE.md
 FORGOT_PASSWORD_FEATURE.md
 FORGOT_PASSWORD_QUICK_START.md
 LOGIN_SIGNUP_IMPROVEMENTS.md
 
-# Database connection test file (contains sensitive connection strings)
+# Sensitive/local test helpers
 backend/test-connection.js
+backend/server-local.js
+
+# Node dependencies
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Production builds / compiled assets
+frontend/build/
+dist/
+.build/
+.cache/
+
+# Environment and secrets
+.env
+.env.*
+backend/.env
+backend/.env.*
+frontend/.env
+frontend/.env.*
+backend/config.local.js
+
+# Logs and diagnostics
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Uploads and runtime files
+backend/uploads/
+frontend/backend/
+
+# Test coverage
+coverage/
