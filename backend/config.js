@@ -22,7 +22,7 @@ if (isProduction) {
 // In all environments, fail fast if Mongo URI is not provided
 if (!config.MONGODB_URI) {
   console.error('\u274c MONGODB_URI is not set. Create backend/.env with:');
-  console.error('MONGODB_URI=mongodb+srv://Rahal:SnFMkQRFMaeHzbqj@cluster0.wrmom9e.mongodb.net/giraffe-cabs?retryWrites=true&w=majority');
+  console.error('MONGODB_URI=mongodb+srv://Rahal:<password>@cluster0.wrmom9e.mongodb.net/giraffe-cabs?retryWrites=true&w=majority');
   process.exit(1);
 }
 
