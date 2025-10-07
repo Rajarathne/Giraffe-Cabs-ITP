@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import axios from 'axios';
 import './RentalManagement.css';
 
@@ -16,6 +16,10 @@ const RentalManagement = ({
   onDeleteRental,
   onUpdateRentalStatus
 }) => {
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const generateRentalReport = async (reportType) => {
     try {
@@ -60,6 +64,19 @@ const RentalManagement = ({
       alert(`Failed to generate ${reportType.toUpperCase()} report: ${error.response?.data?.message || error.message}`);
     }
   };
+  const filteredRentals = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    return rentals.filter(r => {
+      const matchesSearch = !term ||
+        (r.contractId || '').toLowerCase().includes(term) ||
+        (r.vehicle?.vehicleNumber || '').toLowerCase().includes(term) ||
+        (`${r.user?.firstName || ''} ${r.user?.lastName || ''}`.trim().toLowerCase().includes(term));
+      const matchesType = typeFilter === 'all' || r.rentalType === typeFilter;
+      const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
+      return matchesSearch && matchesType && matchesStatus;
+    });
+  }, [rentals, searchTerm, typeFilter, statusFilter]);
+
   return (
     <div className="rentals-content">
       <div className="content-header">
@@ -95,6 +112,42 @@ const RentalManagement = ({
         </div>
       </div>
 
+      {/* Compact Search & Filter */}
+      <div className="compact-search-filter">
+        <div className="search-input-wrapper">
+          <i className="fas fa-search"></i>
+          <input
+            type="text"
+            placeholder="Search by contract, vehicle, or user..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && (
+            <button className="clear-btn" onClick={() => setSearchTerm('')} title="Clear">
+              <i className="fas fa-times"></i>
+            </button>
+          )}
+        </div>
+        <div className="filter-dropdowns">
+          <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+            <option value="all">All Types</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="long-term">Long Term</option>
+          </select>
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div className="results-info">{filteredRentals.length} result{filteredRentals.length !== 1 ? 's' : ''}</div>
+      </div>
+
       <div className="rentals-table">
         <table>
           <thead>
@@ -110,7 +163,7 @@ const RentalManagement = ({
             </tr>
           </thead>
           <tbody>
-            {rentals.map(rental => (
+            {filteredRentals.map(rental => (
               <tr key={rental._id}>
                 <td>{rental.contractId || 'N/A'}</td>
                 <td>{rental.vehicle?.vehicleNumber}</td>
