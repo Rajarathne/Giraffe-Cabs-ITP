@@ -9,6 +9,8 @@ const VehicleList = () => {
   const [error, setError] = useState('');
   const [user, setUser] = useState(null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [notifications, setNotifications] = useState({ unreadCount: 0, items: [] });
+  const [showNotifications, setShowNotifications] = useState(false);
   
   // Search and filter state
   const [searchTerm, setSearchTerm] = useState('');
@@ -64,6 +66,23 @@ const VehicleList = () => {
 
     fetchVehicles();
   }, [navigate]);
+
+  // Notifications: load on mount and poll to match Home experience
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (!token) return;
+    const load = async () => {
+      try {
+        const res = await axios.get('/api/notifications', { headers: { Authorization: `Bearer ${token}` } });
+        setNotifications(res.data);
+      } catch (e) {
+        // silent
+      }
+    };
+    load();
+    const id = setInterval(load, 15000);
+    return () => clearInterval(id);
+  }, []);
 
   const toggleProfileDropdown = () => {
     setShowProfileDropdown(!showProfileDropdown);
@@ -296,6 +315,9 @@ const VehicleList = () => {
               </button>
               {showProfileDropdown && (
                 <div className="dropdown-menu">
+                  <button className="dropdown-item" onClick={() => { setShowNotifications(prev => !prev); if (!showNotifications) { (async()=>{ try { const token = localStorage.getItem('authToken'); const res = await axios.get('/api/notifications', { headers: { Authorization: `Bearer ${token}` } }); setNotifications(res.data);} catch(e){} })(); } }}>
+                    <i className="fas fa-bell"></i> Notifications {notifications.unreadCount > 0 && (<span className="notif-inline">{notifications.unreadCount}</span>)}
+                  </button>
                   <a href="/profile" className="dropdown-item">
                     <i className="fas fa-user"></i> Profile
                   </a>
@@ -308,6 +330,29 @@ const VehicleList = () => {
                   <button onClick={handleLogout} className="dropdown-item logout">
                     <i className="fas fa-sign-out-alt"></i> Logout
                   </button>
+                </div>
+              )}
+              {showNotifications && (
+                <div className="notif-dropdown" style={{ right: 0 }}>
+                  <div className="notif-header">
+                    <span>Notifications</span>
+                    <button className="mark-read" onClick={async ()=>{ try { const token = localStorage.getItem('authToken'); await axios.put('/api/notifications/read-all',{}, { headers: { Authorization: `Bearer ${token}` } }); const res = await axios.get('/api/notifications', { headers: { Authorization: `Bearer ${token}` } }); setNotifications(res.data);} catch(e){} }}>
+                      Mark all read
+                    </button>
+                  </div>
+                  <div className="notif-list">
+                    {(notifications.items && notifications.items.length) === 0 ? (
+                      <div className="notif-empty">No notifications</div>
+                    ) : (
+                      (notifications.items || []).map(n => (
+                        <div key={n._id} className={`notif-item ${n.isRead ? '' : 'unread'}`} onClick={async ()=>{ try { const token = localStorage.getItem('authToken'); await axios.put(`/api/notifications/${n._id}/read`,{}, { headers: { Authorization: `Bearer ${token}` } }); const res = await axios.get('/api/notifications', { headers: { Authorization: `Bearer ${token}` } }); setNotifications(res.data);} catch(e){} }}>
+                          <div className="notif-title">{n.title}</div>
+                          <div className="notif-message">{n.message}</div>
+                          <div className="notif-time">{new Date(n.createdAt).toLocaleString()}</div>
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
               )}
             </div>
