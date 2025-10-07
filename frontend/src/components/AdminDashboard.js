@@ -76,6 +76,7 @@ const AdminDashboard = () => {
   });
   const [tourPackages, setTourPackages] = useState([]);
   const [tourBookings, setTourBookings] = useState([]);
+  const [upcomingTomorrow, setUpcomingTomorrow] = useState({ date: '', count: 0, bookings: [] });
   
   // Financial data
   const [financialData, setFinancialData] = useState({
@@ -167,7 +168,7 @@ const AdminDashboard = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       // Load all data in parallel
-      const [vehiclesRes, rentalsRes, bookingsRes, paymentsRes, servicesRes, serviceRemindersRes, vehicleStatsRes, rentalStatsRes, bookingStatsRes, , serviceStatsRes, financialSummaryRes, financialEntriesRes, tourPackagesRes, tourBookingsRes] = await Promise.all([
+      const [vehiclesRes, rentalsRes, bookingsRes, paymentsRes, servicesRes, serviceRemindersRes, vehicleStatsRes, rentalStatsRes, bookingStatsRes, , serviceStatsRes, financialSummaryRes, financialEntriesRes, tourPackagesRes, tourBookingsRes, upcomingRes] = await Promise.all([
         axios.get('/api/vehicles', { headers }),
         axios.get('/api/rentals/all', { headers }),
         axios.get('/api/bookings', { headers }),
@@ -182,7 +183,8 @@ const AdminDashboard = () => {
         axios.get('/api/financial/summary', { headers }),
         axios.get('/api/financial', { headers }),
         axios.get('/api/tour-packages', { headers }),
-        axios.get('/api/tour-bookings', { headers })
+        axios.get('/api/tour-bookings', { headers }),
+        axios.get('/api/bookings/upcoming/tomorrow', { headers })
       ]);
 
       console.log('✅ Loaded vehicles data:', vehiclesRes.data?.length || 0, 'vehicles');
@@ -194,6 +196,7 @@ const AdminDashboard = () => {
       setServiceReminders(serviceRemindersRes.data);
       setTourPackages(tourPackagesRes.data);
       setTourBookings(tourBookingsRes.data);
+      setUpcomingTomorrow(upcomingRes.data || { date: '', count: 0, bookings: [] });
       
       // Debug financial data
       console.log('📊 Financial Summary Data:', financialSummaryRes.data);
@@ -1151,6 +1154,25 @@ const AdminDashboard = () => {
           {currentTime.toLocaleString()}
         </div>
       </div>
+
+      {upcomingTomorrow.count > 0 && (
+        <div className="upcoming-banner" role="alert">
+          <div className="upcoming-main">
+            <i className="fas fa-bell"></i>
+            <span><strong>{upcomingTomorrow.count}</strong> booking{upcomingTomorrow.count !== 1 ? 's' : ''} scheduled for tomorrow ({upcomingTomorrow.date}).</span>
+          </div>
+          <div className="upcoming-list">
+            {upcomingTomorrow.bookings.slice(0, 3).map((b) => (
+              <span key={b._id} className="up-item">
+                {(b.user?.firstName || '')} {(b.user?.lastName || '')} • {new Date(b.pickupDate).toLocaleDateString()} {b.pickupTime}
+              </span>
+            ))}
+            {upcomingTomorrow.count > 3 && (
+              <span className="up-more">+{upcomingTomorrow.count - 3} more</span>
+            )}
+          </div>
+        </div>
+      )}
 
       <DashboardStats 
         stats={stats}

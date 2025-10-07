@@ -399,6 +399,54 @@
   color: #ffffff;
 }
 
+/* Upcoming bookings banner */
+.upcoming-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin: 0 0 1rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid #fde68a;
+  background: #fffbeb;
+  color: #92400e;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+}
+
+.upcoming-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.upcoming-main i {
+  color: #f59e0b;
+}
+
+.upcoming-list {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.up-item {
+  background: #fff7ed;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.up-more {
+  color: #b45309;
+  font-weight: 700;
+}
+
 .dashboard-title {
   margin: 0;
   font-size: 1.75rem;

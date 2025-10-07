@@ -643,6 +643,31 @@ const generateVehicleUtilizationReport = async (req, res) => {
   }
 };
 
+// Get bookings happening tomorrow (admin reminder)
+const getUpcomingBookings = async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const tomorrowStart = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+    const tomorrowEnd = new Date(tomorrowStart.getTime() + 24 * 60 * 60 * 1000 - 1);
+
+    const bookings = await Booking.find({
+      pickupDate: { $gte: tomorrowStart, $lte: tomorrowEnd },
+      status: { $in: ['pending', 'confirmed'] }
+    })
+      .populate('user', 'firstName lastName email phone')
+      .lean();
+
+    res.json({ date: tomorrowStart.toISOString().split('T')[0], count: bookings.length, bookings });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch upcoming bookings', error: error.message });
+  }
+};
+
 // Generate Booking Invoice PDF
 const generateBookingInvoice = async (req, res) => {
   try {
@@ -809,5 +834,6 @@ module.exports = {
   generateRevenueReport,
   generateCustomerReport,
   generateVehicleUtilizationReport,
-  generateBookingInvoice
+  generateBookingInvoice,
+  getUpcomingBookings
 };
