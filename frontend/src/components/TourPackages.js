@@ -204,32 +204,15 @@ const TourPackages = () => {
           </div>
           
           <div className={`nav-menu ${mobileMenuOpen ? 'active' : ''}`}>
-            <button 
-              className="nav-link" 
-              onClick={() => {
-                setMobileMenuOpen(false);
-                navigate('/home');
-              }}
-            >
-              <i className="fas fa-home"></i>
-              Home
+            <button className="nav-link" onClick={() => { setMobileMenuOpen(false); navigate('/home#home'); }}>Home</button>
+            <button className="nav-link" onClick={() => { setMobileMenuOpen(false); navigate('/home#services'); }}>Services</button>
+            <button className="nav-link" onClick={() => { setMobileMenuOpen(false); navigate('/home#about'); }}>About Us</button>
+            <button className="nav-link" onClick={() => { setMobileMenuOpen(false); navigate('/vehicles'); }}>Our Fleet</button>
+            <button className="nav-link" onClick={() => { setMobileMenuOpen(false); navigate('/home#contact'); }}>Contact Us</button>
+            <button className="nav-link active" onClick={() => { setMobileMenuOpen(false); navigate('/tour-packages'); }}>Tour Packages</button>
+            <button className="btn btn-primary nav-book-btn" onClick={() => { setMobileMenuOpen(false); navigate('/booking'); }}>
+              <i className="fas fa-calendar-plus"></i> Book Now
             </button>
-            <a href="/vehicles" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
-              <i className="fas fa-car"></i>
-              Vehicles
-            </a>
-            <a href="/tour-packages" className="nav-link active" onClick={() => setMobileMenuOpen(false)}>
-              <i className="fas fa-map-marked-alt"></i>
-              Tours
-            </a>
-            <a href="/about" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
-              <i className="fas fa-info-circle"></i>
-              About
-            </a>
-            <a href="/contact" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
-              <i className="fas fa-envelope"></i>
-              Contact
-            </a>
           </div>
           
           <div className="nav-profile">

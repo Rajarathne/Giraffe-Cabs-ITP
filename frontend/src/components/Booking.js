@@ -454,8 +454,11 @@ const Booking = () => {
             Giraffe Cabs
           </div>
           <div className="nav-menu">
-            <button className="nav-link" onClick={() => navigate('/home')}>Home</button>
+            <button className="nav-link" onClick={() => navigate('/home#home')}>Home</button>
+            <button className="nav-link" onClick={() => navigate('/home#services')}>Services</button>
+            <button className="nav-link" onClick={() => navigate('/home#about')}>About Us</button>
             <button className="nav-link" onClick={() => navigate('/vehicles')}>Our Fleet</button>
+            <button className="nav-link" onClick={() => navigate('/home#contact')}>Contact Us</button>
             <button className="nav-link" onClick={() => navigate('/tour-packages')}>Tour Packages</button>
             <button className="nav-link active" onClick={() => navigate('/booking')}>Book Service</button>
             <button 

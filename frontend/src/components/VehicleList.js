@@ -307,11 +307,11 @@ const VehicleList = () => {
             <span>Giraffe Cabs</span>
           </div>
           <div className="nav-menu">
-            <a href="/#home" className="nav-link">Home</a>
-            <a href="/#services" className="nav-link">Services</a>
-            <a href="/#about" className="nav-link">About Us</a>
-            <a href="/#fleet" className="nav-link">Our Fleet</a>
-            <a href="/#contact" className="nav-link">Contact Us</a>
+            <button className="nav-link" onClick={() => navigate('/home#home')}>Home</button>
+            <button className="nav-link" onClick={() => navigate('/home#services')}>Services</button>
+            <button className="nav-link" onClick={() => navigate('/home#about')}>About Us</button>
+            <button className="nav-link" onClick={() => navigate('/vehicles')}>Our Fleet</button>
+            <button className="nav-link" onClick={() => navigate('/home#contact')}>Contact Us</button>
             <button 
               className="btn btn-primary nav-book-btn"
               onClick={() => navigate('/tour-packages')}
