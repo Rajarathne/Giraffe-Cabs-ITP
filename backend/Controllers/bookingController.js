@@ -251,6 +251,47 @@ const deleteBooking = async (req, res) => {
   }
 };
 
+// Update Booking (Admin only - edit core fields)
+const updateBookingByAdmin = async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    const editableFields = [
+      'pickupLocation',
+      'dropoffLocation',
+      'pickupDate',
+      'pickupTime',
+      'returnDate',
+      'returnTime',
+      'passengers',
+      'additionalNotes',
+      'paymentStatus',
+      'paymentMethod',
+      'serviceDetails'
+    ];
+
+    editableFields.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        booking[field] = req.body[field];
+      }
+    });
+
+    booking.updatedAt = new Date();
+    const updated = await booking.save();
+    await updated.populate('user', 'firstName lastName email phone');
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Get Booking Statistics (Admin only)
 const getBookingStats = async (req, res) => {
   try {
@@ -860,5 +901,6 @@ module.exports = {
   generateVehicleUtilizationReport,
   generateBookingInvoice,
   getUpcomingBookings,
-  getTodayBookings
+  getTodayBookings,
+  updateBookingByAdmin
 };

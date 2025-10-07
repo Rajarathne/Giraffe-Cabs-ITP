@@ -19,7 +19,8 @@ const {
   generateVehicleUtilizationReport,
   generateBookingInvoice,
   getUpcomingBookings,
-  getTodayBookings
+  getTodayBookings,
+  updateBookingByAdmin
 } = require('../Controllers/bookingController');
 const { protect } = require('../Middleware/authMiddleware');
 
@@ -51,6 +52,7 @@ router.get('/upcoming/today', protect, getTodayBookings);
 
 // Specific booking routes (must come before generic /:id route)
 router.put('/:id/status', protect, updateBookingStatus);
+router.put('/:id', protect, updateBookingByAdmin);
 router.put('/:id/pricing', (req, res, next) => {
   console.log('=== PRICING ROUTE HIT ===');
   console.log('Route:', req.route?.path);

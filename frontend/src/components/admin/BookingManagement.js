@@ -22,6 +22,18 @@ const BookingManagement = ({
     isPriceConfirmed: false
   });
 
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editForm, setEditForm] = useState({
+    pickupLocation: '',
+    dropoffLocation: '',
+    pickupDate: '',
+    pickupTime: '',
+    returnDate: '',
+    returnTime: '',
+    passengers: 1,
+    additionalNotes: ''
+  });
+
   // Search and filter states
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -521,9 +533,18 @@ const BookingManagement = ({
                     <button 
                       className="btn btn-sm btn-outline"
                       onClick={() => {
-                        // TODO: Implement edit functionality
-                        console.log('Edit booking:', booking._id);
-                        alert('Edit functionality will be implemented');
+                        setSelectedBooking(booking);
+                        setEditForm({
+                          pickupLocation: booking.pickupLocation || '',
+                          dropoffLocation: booking.dropoffLocation || '',
+                          pickupDate: booking.pickupDate ? new Date(booking.pickupDate).toISOString().slice(0,10) : '',
+                          pickupTime: booking.pickupTime || '',
+                          returnDate: booking.returnDate ? new Date(booking.returnDate).toISOString().slice(0,10) : '',
+                          returnTime: booking.returnTime || '',
+                          passengers: booking.passengers || 1,
+                          additionalNotes: booking.additionalNotes || ''
+                        });
+                        setShowEditModal(true);
                       }}
                       title="Edit Booking"
                     >
@@ -837,6 +858,77 @@ const BookingManagement = ({
                 <button type="submit" className="btn btn-primary">
                   <i className="fas fa-check"></i> Confirm Price
                 </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Booking Modal */}
+      {showEditModal && (
+        <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowEditModal(false)}>&times;</button>
+            <h2>Edit Booking</h2>
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              try {
+                const token = localStorage.getItem('authToken');
+                await axios.put(`/api/bookings/${selectedBooking._id}`, {
+                  ...editForm,
+                  passengers: parseInt(editForm.passengers) || 1
+                }, { headers: { Authorization: `Bearer ${token}` } });
+                alert('Booking updated successfully!');
+                setShowEditModal(false);
+                setSelectedBooking(null);
+                if (onRefreshData) onRefreshData();
+              } catch (err) {
+                alert('Failed to update booking: ' + (err.response?.data?.message || err.message));
+              }
+            }}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Pickup Location</label>
+                  <input value={editForm.pickupLocation} onChange={e=>setEditForm({...editForm,pickupLocation:e.target.value})} required />
+                </div>
+                <div className="form-group">
+                  <label>Dropoff Location</label>
+                  <input value={editForm.dropoffLocation} onChange={e=>setEditForm({...editForm,dropoffLocation:e.target.value})} required />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Pickup Date</label>
+                  <input type="date" value={editForm.pickupDate} onChange={e=>setEditForm({...editForm,pickupDate:e.target.value})} required />
+                </div>
+                <div className="form-group">
+                  <label>Pickup Time</label>
+                  <input type="time" value={editForm.pickupTime} onChange={e=>setEditForm({...editForm,pickupTime:e.target.value})} required />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Return Date</label>
+                  <input type="date" value={editForm.returnDate} onChange={e=>setEditForm({...editForm,returnDate:e.target.value})} />
+                </div>
+                <div className="form-group">
+                  <label>Return Time</label>
+                  <input type="time" value={editForm.returnTime} onChange={e=>setEditForm({...editForm,returnTime:e.target.value})} />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Passengers</label>
+                  <input type="number" min="1" value={editForm.passengers} onChange={e=>setEditForm({...editForm,passengers:e.target.value})} required />
+                </div>
+              </div>
+              <div className="form-group">
+                <label>Additional Notes</label>
+                <textarea rows="3" value={editForm.additionalNotes} onChange={e=>setEditForm({...editForm,additionalNotes:e.target.value})} />
+              </div>
+              <div className="form-actions">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowEditModal(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary"><i className="fas fa-save"></i> Save Changes</button>
               </div>
             </form>
           </div>
