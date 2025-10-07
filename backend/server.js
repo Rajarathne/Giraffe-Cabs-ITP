@@ -1,4 +1,5 @@
-require('dotenv').config();
+// Load environment variables from the backend/.env file explicitly
+require('dotenv').config({ path: __dirname + '/.env' });
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
