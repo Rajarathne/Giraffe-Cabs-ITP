@@ -222,14 +222,7 @@ const PaymentManagement = ({
                       </button>
                     )}
                     
-                    {/* Edit Button */}
-                    <button 
-                      className="btn btn-sm btn-primary"
-                      onClick={() => onEditPayment(payment._id)}
-                      title="Edit Payment"
-                    >
-                      <i className="fas fa-edit"></i>
-                    </button>
+                    {/* Edit Button removed per request */}
                     
                     {/* Delete Button */}
                     <button 
