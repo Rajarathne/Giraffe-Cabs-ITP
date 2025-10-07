@@ -11,6 +11,8 @@ const Home = () => {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showRentalsModal, setShowRentalsModal] = useState(false);
   const [availableVehicles, setAvailableVehicles] = useState([]);
+  const [notifications, setNotifications] = useState({ unreadCount: 0, items: [] });
+  const [showNotifications, setShowNotifications] = useState(false);
   const [rentals, setRentals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [bookingErrors, setBookingErrors] = useState({});
@@ -80,6 +82,12 @@ const Home = () => {
     loadVehicles();
     loadRentals();
     loadAvailableVehiclesForRental();
+    // Load notifications periodically
+    const interval = setInterval(() => {
+      loadNotifications();
+    }, 15000);
+    loadNotifications();
+    return () => clearInterval(interval);
   }, [navigate, loadAvailableVehiclesForRental]);
 
   const loadRentals = async () => {
@@ -91,6 +99,17 @@ const Home = () => {
       setRentals(response.data);
     } catch (error) {
       console.error('Error loading rentals:', error);
+    }
+  };
+
+  const loadNotifications = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) return;
+      const res = await axios.get('/api/notifications', { headers: { Authorization: `Bearer ${token}` } });
+      setNotifications(res.data);
+    } catch (e) {
+      // silent
     }
   };
 
@@ -365,6 +384,9 @@ const Home = () => {
               </button>
               {showProfileDropdown && (
                 <div className="profile-menu">
+                  <button className="profile-menu-item" onClick={() => { setShowNotifications(prev => !prev); if (!showNotifications) { loadNotifications(); } }}>
+                    <i className="fas fa-bell"></i> Notifications {notifications.unreadCount > 0 && (<span className="notif-inline">{notifications.unreadCount}</span>)}
+                  </button>
                   <button className="profile-menu-item" onClick={() => navigate('/profile')}>
                     <i className="fas fa-user-edit"></i> My Profile
                   </button>
@@ -380,6 +402,29 @@ const Home = () => {
                   <button className="profile-menu-item" onClick={logout}>
                     <i className="fas fa-sign-out-alt"></i> Logout
                   </button>
+                </div>
+              )}
+              {showNotifications && (
+                <div className="notif-dropdown">
+                  <div className="notif-header">
+                    <span>Notifications</span>
+                    <button className="mark-read" onClick={async ()=>{ try { const token = localStorage.getItem('authToken'); await axios.put('/api/notifications/read-all',{}, { headers: { Authorization: `Bearer ${token}` } }); await loadNotifications(); } catch (e) { console.error('Mark all read failed', e); } }}>
+                      Mark all read
+                    </button>
+                  </div>
+                  <div className="notif-list">
+                    {(notifications.items && notifications.items.length) === 0 ? (
+                      <div className="notif-empty">No notifications</div>
+                    ) : (
+                      (notifications.items || []).map(n => (
+                        <div key={n._id} className={`notif-item ${n.isRead ? '' : 'unread'}`} onClick={async ()=>{ try { const token = localStorage.getItem('authToken'); await axios.put(`/api/notifications/${n._id}/read`,{}, { headers: { Authorization: `Bearer ${token}` } }); await loadNotifications(); } catch (e) { console.error('Mark read failed', e); } }}>
+                          <div className="notif-title">{n.title}</div>
+                          <div className="notif-message">{n.message}</div>
+                          <div className="notif-time">{new Date(n.createdAt).toLocaleString()}</div>
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
               )}
             </div>

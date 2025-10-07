@@ -132,8 +132,75 @@ const sendOTPEmail = async (email, otp, userName = 'User') => {
   }
 };
 
+// Send Booking Confirmation Email
+const sendBookingConfirmationEmail = async ({
+  toEmail,
+  userName = 'Customer',
+  bookingId,
+  serviceType,
+  pickupLocation,
+  dropoffLocation,
+  pickupDate,
+  pickupTime,
+  totalPrice
+}) => {
+  try {
+    const transporter = createTransporter();
+    const mailOptions = {
+      from: `"OUR Vehicle System" <${process.env.EMAIL_USER || 'noreply@ourvehicle.com'}>`,
+      to: toEmail,
+      subject: `✅ Booking Confirmed - ${bookingId}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; background: #f6f8fb; margin: 0; padding: 0; }
+            .container { max-width: 640px; margin: 24px auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+            .header { background: linear-gradient(135deg, #1E93AB 0%, #E62727 100%); color: #fff; padding: 24px; }
+            .header h1 { margin: 0; font-size: 20px; }
+            .content { padding: 24px; color: #1f2937; }
+            .row { margin: 8px 0; }
+            .label { color: #6b7280; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+            .value { font-weight: 700; }
+            .footer { background: #f9fafb; padding: 16px 24px; color: #6b7280; font-size: 12px; text-align: center; }
+            .badge { display: inline-block; background: #e8f5ff; color: #1e40af; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>✅ Your ride is confirmed</h1>
+              <div class="badge">Booking ${bookingId}</div>
+            </div>
+            <div class="content">
+              <p>Hi ${userName},</p>
+              <p>Your booking has been confirmed. Here are the details:</p>
+              <div class="row"><span class="label">Service</span><div class="value">${serviceType}</div></div>
+              <div class="row"><span class="label">Pickup</span><div class="value">${pickupLocation}</div></div>
+              <div class="row"><span class="label">Dropoff</span><div class="value">${dropoffLocation || '-'} </div></div>
+              <div class="row"><span class="label">Date & Time</span><div class="value">${pickupDate} ${pickupTime}</div></div>
+              <div class="row"><span class="label">Price</span><div class="value">LKR ${Number(totalPrice || 0).toLocaleString()}</div></div>
+              <p>If you have any questions, reply to this email.</p>
+            </div>
+            <div class="footer">&copy; ${new Date().getFullYear()} OUR Vehicle System</div>
+          </div>
+        </body>
+        </html>
+      `
+    };
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✅ Booking confirmation email sent:', info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('❌ Booking confirmation email failed:', error);
+    return { success: false, error: error.message };
+  }
+};
+
 module.exports = {
-  sendOTPEmail
+  sendOTPEmail,
+  sendBookingConfirmationEmail
 };
 
 

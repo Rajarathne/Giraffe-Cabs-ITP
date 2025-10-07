@@ -3,6 +3,8 @@ const User = require('../Models/User');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
+const { sendBookingConfirmationEmail } = require('../utils/emailService');
+const Notification = require('../Models/Notification');
 
 // Get All Bookings (Admin only)
 const getAllBookings = async (req, res) => {
@@ -97,7 +99,33 @@ const updateBookingStatus = async (req, res) => {
     const updatedBooking = await booking.save();
     
     await updatedBooking.populate('user', 'firstName lastName email phone');
-    
+    // Notify user on confirmation
+    if (status === 'confirmed' && updatedBooking.user?.email) {
+      try {
+        await sendBookingConfirmationEmail({
+          toEmail: updatedBooking.user.email,
+          userName: `${updatedBooking.user.firstName} ${updatedBooking.user.lastName}`.trim(),
+          bookingId: updatedBooking._id,
+          serviceType: updatedBooking.serviceType,
+          pickupLocation: updatedBooking.pickupLocation,
+          dropoffLocation: updatedBooking.dropoffLocation,
+          pickupDate: new Date(updatedBooking.pickupDate).toLocaleDateString(),
+          pickupTime: updatedBooking.pickupTime,
+          totalPrice: updatedBooking.totalPrice
+        });
+        // Create in-app notification
+        await Notification.create({
+          user: updatedBooking.user._id,
+          type: 'booking',
+          title: 'Booking Confirmed',
+          message: `Your ${updatedBooking.serviceType} ride on ${new Date(updatedBooking.pickupDate).toLocaleDateString()} at ${updatedBooking.pickupTime} is confirmed.`,
+          data: { bookingId: updatedBooking._id }
+        });
+      } catch (notifyErr) {
+        console.error('Failed to send confirmation email:', notifyErr);
+      }
+    }
+
     res.json(updatedBooking);
   } catch (error) {
     res.status(500).json({ message: error.message });

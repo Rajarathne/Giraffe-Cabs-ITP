@@ -41,6 +41,7 @@ app.use('/api/payments', require('./Routes/paymentRoutes'));
 app.use('/api/financial', require('./Routes/financialRoutes'));
 app.use('/api/tour-packages', require('./Routes/tourPackageRoutes'));
 app.use('/api/tour-bookings', require('./Routes/tourBookingRoutes'));
+app.use('/api/notifications', require('./Routes/notificationRoutes'));
 
 // Vehicle Provider Routes
 app.use('/api/vehicle-provider/auth', require('./Routes/vehicleProviderAuthRoutes'));
