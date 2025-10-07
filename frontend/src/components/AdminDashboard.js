@@ -77,6 +77,7 @@ const AdminDashboard = () => {
   const [tourPackages, setTourPackages] = useState([]);
   const [tourBookings, setTourBookings] = useState([]);
   const [upcomingTomorrow, setUpcomingTomorrow] = useState({ date: '', count: 0, bookings: [] });
+  const [todayBookings, setTodayBookings] = useState({ date: '', count: 0, bookings: [] });
   
   // Financial data
   const [financialData, setFinancialData] = useState({
@@ -168,7 +169,7 @@ const AdminDashboard = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       // Load all data in parallel
-      const [vehiclesRes, rentalsRes, bookingsRes, paymentsRes, servicesRes, serviceRemindersRes, vehicleStatsRes, rentalStatsRes, bookingStatsRes, , serviceStatsRes, financialSummaryRes, financialEntriesRes, tourPackagesRes, tourBookingsRes, upcomingRes] = await Promise.all([
+      const [vehiclesRes, rentalsRes, bookingsRes, paymentsRes, servicesRes, serviceRemindersRes, vehicleStatsRes, rentalStatsRes, bookingStatsRes, , serviceStatsRes, financialSummaryRes, financialEntriesRes, tourPackagesRes, tourBookingsRes, upcomingRes, todayRes] = await Promise.all([
         axios.get('/api/vehicles', { headers }),
         axios.get('/api/rentals/all', { headers }),
         axios.get('/api/bookings', { headers }),
@@ -184,7 +185,8 @@ const AdminDashboard = () => {
         axios.get('/api/financial', { headers }),
         axios.get('/api/tour-packages', { headers }),
         axios.get('/api/tour-bookings', { headers }),
-        axios.get('/api/bookings/upcoming/tomorrow', { headers })
+        axios.get('/api/bookings/upcoming/tomorrow', { headers }),
+        axios.get('/api/bookings/upcoming/today', { headers })
       ]);
 
       console.log('✅ Loaded vehicles data:', vehiclesRes.data?.length || 0, 'vehicles');
@@ -197,6 +199,7 @@ const AdminDashboard = () => {
       setTourPackages(tourPackagesRes.data);
       setTourBookings(tourBookingsRes.data);
       setUpcomingTomorrow(upcomingRes.data || { date: '', count: 0, bookings: [] });
+      setTodayBookings(todayRes.data || { date: '', count: 0, bookings: [] });
       
       // Debug financial data
       console.log('📊 Financial Summary Data:', financialSummaryRes.data);
@@ -1154,6 +1157,52 @@ const AdminDashboard = () => {
           {currentTime.toLocaleString()}
         </div>
       </div>
+
+      {todayBookings.count > 0 && (
+        <div className="booking-reminders">
+          <div className="reminders-header-row">
+            <h2>
+              <i className="fas fa-bell"></i>
+              Today's Booking Reminders ({todayBookings.date})
+            </h2>
+            <span className="reminder-count-badge">{todayBookings.count} due today</span>
+          </div>
+          <div className="reminders-grid bookings">
+            {todayBookings.bookings.map((b) => (
+              <div key={b._id} className="reminder-card warning">
+                <div className="reminder-header">
+                  <h3>
+                    <i className="fas fa-receipt"></i>
+                    Booking #{b._id.slice(-6)}
+                  </h3>
+                  <span className="reminder-count">{b.status}</span>
+                </div>
+                <div className="reminder-list">
+                  <div className="reminder-item">
+                    <div className="vehicle-info">
+                      <strong>{(b.user?.firstName || '')} {(b.user?.lastName || '')}</strong>
+                      <span>{b.user?.email} • {b.user?.phone}</span>
+                    </div>
+                    <div className="service-info" style={{ alignItems: 'flex-end' }}>
+                      <span className="service-type">{(b.serviceType || '').toString()}</span>
+                      <small>{new Date(b.pickupDate).toLocaleDateString()} {b.pickupTime}</small>
+                    </div>
+                  </div>
+                  <div className="reminder-item">
+                    <div className="vehicle-info">
+                      <span>Pickup: {b.pickupLocation}</span>
+                      <span>Dropoff: {b.dropoffLocation}</span>
+                    </div>
+                    <div className="service-info">
+                      <small>Passengers: {b.passengers}</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {upcomingTomorrow.count > 0 && (
         <div className="upcoming-banner" role="alert">

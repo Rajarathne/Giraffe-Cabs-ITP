@@ -18,7 +18,8 @@ const {
   generateCustomerReport,
   generateVehicleUtilizationReport,
   generateBookingInvoice,
-  getUpcomingBookings
+  getUpcomingBookings,
+  getTodayBookings
 } = require('../Controllers/bookingController');
 const { protect } = require('../Middleware/authMiddleware');
 
@@ -44,6 +45,9 @@ router.get('/reports/vehicles', protect, generateVehicleUtilizationReport);
 
 // Admin reminder: upcoming bookings (tomorrow)
 router.get('/upcoming/tomorrow', protect, getUpcomingBookings);
+
+// Admin reminder: today's bookings
+router.get('/upcoming/today', protect, getTodayBookings);
 
 // Specific booking routes (must come before generic /:id route)
 router.put('/:id/status', protect, updateBookingStatus);
