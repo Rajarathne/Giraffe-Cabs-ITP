@@ -16,6 +16,7 @@ import './FinancialStyles.css';
 
 // Import separate components
 import DashboardStats from './admin/DashboardStats';
+import BookingRemindersModal from './admin/BookingRemindersModal';
 import ServiceRemindersModal from './admin/ServiceRemindersModal';
 import VehicleManagement from './admin/VehicleManagement';
 import ServiceManagement from './admin/ServiceManagement';
@@ -78,6 +79,7 @@ const AdminDashboard = () => {
   const [tourBookings, setTourBookings] = useState([]);
   const [upcomingTomorrow, setUpcomingTomorrow] = useState({ date: '', count: 0, bookings: [] });
   const [todayBookings, setTodayBookings] = useState({ date: '', count: 0, bookings: [] });
+  const [showBookingReminders, setShowBookingReminders] = useState(false);
   
   // Financial data
   const [financialData, setFinancialData] = useState({
@@ -1158,51 +1160,7 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {todayBookings.count > 0 && (
-        <div className="booking-reminders">
-          <div className="reminders-header-row">
-            <h2>
-              <i className="fas fa-bell"></i>
-              Today's Booking Reminders ({todayBookings.date})
-            </h2>
-            <span className="reminder-count-badge">{todayBookings.count} due today</span>
-          </div>
-          <div className="reminders-grid bookings">
-            {todayBookings.bookings.map((b) => (
-              <div key={b._id} className="reminder-card warning">
-                <div className="reminder-header">
-                  <h3>
-                    <i className="fas fa-receipt"></i>
-                    Booking #{b._id.slice(-6)}
-                  </h3>
-                  <span className="reminder-count">{b.status}</span>
-                </div>
-                <div className="reminder-list">
-                  <div className="reminder-item">
-                    <div className="vehicle-info">
-                      <strong>{(b.user?.firstName || '')} {(b.user?.lastName || '')}</strong>
-                      <span>{b.user?.email} • {b.user?.phone}</span>
-                    </div>
-                    <div className="service-info" style={{ alignItems: 'flex-end' }}>
-                      <span className="service-type">{(b.serviceType || '').toString()}</span>
-                      <small>{new Date(b.pickupDate).toLocaleDateString()} {b.pickupTime}</small>
-                    </div>
-                  </div>
-                  <div className="reminder-item">
-                    <div className="vehicle-info">
-                      <span>Pickup: {b.pickupLocation}</span>
-                      <span>Dropoff: {b.dropoffLocation}</span>
-                    </div>
-                    <div className="service-info">
-                      <small>Passengers: {b.passengers}</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Today's inline booking reminders banner removed per request; use Booking Reminders card instead */}
 
       {upcomingTomorrow.count > 0 && (
         <div className="upcoming-banner" role="alert">
@@ -1227,6 +1185,8 @@ const AdminDashboard = () => {
         stats={stats}
         serviceReminders={serviceReminders}
         onRemindersClick={() => setShowRemindersModal(true)}
+        onBookingRemindersClick={() => setShowBookingReminders(true)}
+        bookingReminders={{ today: todayBookings.bookings || [], tomorrow: upcomingTomorrow.bookings || [] }}
       />
 
       <DashboardCharts 
@@ -1558,6 +1518,14 @@ const AdminDashboard = () => {
         showModal={showRemindersModal}
         onClose={() => setShowRemindersModal(false)}
         serviceReminders={serviceReminders}
+      />
+
+      <BookingRemindersModal
+        show={showBookingReminders}
+        onClose={() => setShowBookingReminders(false)}
+        today={todayBookings.bookings || []}
+        tomorrow={upcomingTomorrow.bookings || []}
+        loading={loading}
       />
 
     </div>
