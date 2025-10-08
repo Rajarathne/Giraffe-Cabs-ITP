@@ -777,7 +777,7 @@ const generateBookingInvoice = async (req, res) => {
     }
 
     const doc = new PDFDocument({ 
-      margin: 50,
+      margin: 30,
       size: 'A4',
       layout: 'portrait'
     });
@@ -787,122 +787,233 @@ const generateBookingInvoice = async (req, res) => {
     
     doc.pipe(res);
 
-    // Simple header with company branding
+    // ===== ATTRACTIVE HEADER DESIGN =====
+    
+    // Main header background with gradient effect
+    doc.rect(30, 30, 540, 120)
+       .fill('#235784'); // Blue background
+    
+    // Decorative top stripe
+    doc.rect(30, 30, 540, 15)
+       .fill('#F7AA00'); // Gold stripe
+    
+    // Decorative bottom stripe
+    doc.rect(30, 135, 540, 15)
+       .fill('#40A8C4'); // Light blue stripe
+    
+    // Company logo area with white background
+    doc.rect(50, 50, 200, 80)
+       .fill('#FFFFFF'); // White background for logo area
+    
+    // Company logo text with attractive styling
     doc.fillColor('#235784')
-       .fontSize(24)
+       .fontSize(36)
        .font('Helvetica-Bold')
-       .text('🦒 Giraffe Cabs', 50, 50);
+       .text('🦒 GIRAFFE', 60, 60);
+    
+    doc.fillColor('#F7AA00')
+       .fontSize(28)
+       .font('Helvetica-Bold')
+       .text('CABS', 60, 90);
+    
+    // Company tagline
+    doc.fillColor('#235784')
+       .fontSize(12)
+       .font('Helvetica')
+       .text('Your Trusted Travel Partner', 60, 115);
+    
+    // Invoice title with attractive styling
+    doc.rect(400, 50, 160, 80)
+       .fill('#F7AA00'); // Gold background
+    
+    doc.fillColor('#235784')
+       .fontSize(18)
+       .font('Helvetica-Bold')
+       .text('BOOKING', 420, 70)
+       .text('INVOICE', 420, 90);
+    
+    doc.fillColor('#235784')
+       .fontSize(10)
+       .font('Helvetica')
+       .text(`#${booking._id.toString().slice(-8)}`, 420, 110);
+    
+    // Invoice details section
+    doc.fillColor('#235784')
+       .fontSize(14)
+       .font('Helvetica-Bold')
+       .text('Invoice Details', 30, 180);
+    
+    // Invoice details table
+    doc.fillColor('#333333')
+       .fontSize(11)
+       .font('Helvetica');
+    
+    const invoiceDetails = [
+      ['Invoice Number:', `GC-${booking._id.toString().slice(-8)}`],
+      ['Issue Date:', new Date(booking.createdAt).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })],
+      ['Booking Status:', booking.status.toUpperCase()],
+      ['Payment Method:', booking.paymentMethod ? booking.paymentMethod.toUpperCase() : 'CASH']
+    ];
+    
+    let detailY = 200;
+    invoiceDetails.forEach(([label, value]) => {
+      doc.fillColor('#666666')
+         .text(label, 30, detailY);
+      doc.fillColor('#235784')
+         .text(value, 150, detailY);
+      detailY += 15;
+    });
+
+    // ===== CUSTOMER INFORMATION SECTION =====
+    
+    doc.fillColor('#235784')
+       .fontSize(16)
+       .font('Helvetica-Bold')
+       .text('Customer Information', 30, 280);
+    
+    // Customer info background
+    doc.rect(30, 300, 540, 80)
+       .fill('#f8f9fa'); // Light gray background
+    
+    doc.fillColor('#333333')
+       .fontSize(12)
+       .font('Helvetica-Bold')
+       .text(`${booking.user.firstName} ${booking.user.lastName}`, 50, 320);
     
     doc.fillColor('#666666')
-       .fontSize(12)
+       .fontSize(11)
        .font('Helvetica')
-       .text('Your Trusted Travel Partner', 50, 75);
-    
-    // Simple invoice title
-    doc.fillColor('#333333')
-       .fontSize(20)
-       .font('Helvetica-Bold')
-       .text('BOOKING INVOICE', 400, 50);
-    
-    // Simple invoice details
-    doc.fillColor('#333333')
-       .fontSize(12)
-       .font('Helvetica')
-       .text(`Invoice #: ${booking._id}`, 50, 100)
-       .text(`Date: ${new Date(booking.createdAt).toLocaleDateString()}`, 50, 115)
-       .text(`Status: ${booking.status.toUpperCase()}`, 400, 100);
-    
-    doc.moveDown(2);
-
-    // Simple customer information
-    doc.fillColor('#235784')
-       .fontSize(14)
-       .font('Helvetica-Bold')
-       .text('Customer Information', 50, 150);
-    
-    doc.fillColor('#333333')
-       .fontSize(12)
-       .font('Helvetica')
-       .text(`Name: ${booking.user.firstName} ${booking.user.lastName}`, 50, 170)
-       .text(`Email: ${booking.user.email}`, 50, 185)
-       .text(`Phone: ${booking.user.phone}`, 50, 200);
+       .text(`Email: ${booking.user.email}`, 50, 340)
+       .text(`Phone: ${booking.user.phone}`, 50, 355);
     
     if (booking.user.address) {
-      doc.text(`Address: ${booking.user.address}`, 50, 215);
+      doc.text(`Address: ${booking.user.address}`, 50, 370);
     }
+
+    // ===== BOOKING DETAILS SECTION =====
     
-    // Simple booking details
     doc.fillColor('#235784')
-       .fontSize(14)
+       .fontSize(16)
        .font('Helvetica-Bold')
-       .text('Booking Details', 50, 240);
+       .text('Booking Details', 30, 400);
     
-    doc.fillColor('#333333')
-       .fontSize(12)
-       .font('Helvetica')
-       .text(`Service Type: ${booking.serviceType.charAt(0).toUpperCase() + booking.serviceType.slice(1)}`, 50, 260)
-       .text(`Pickup Location: ${booking.pickupLocation}`, 50, 275)
-       .text(`Dropoff Location: ${booking.dropoffLocation}`, 50, 290)
-       .text(`Pickup Date: ${new Date(booking.pickupDate).toLocaleDateString()}`, 50, 305)
-       .text(`Pickup Time: ${booking.pickupTime}`, 50, 320);
+    // Booking details background
+    doc.rect(30, 420, 540, 120)
+       .fill('#ffffff'); // White background
     
+    // Booking details table
+    const bookingDetails = [
+      ['Service Type:', booking.serviceType.charAt(0).toUpperCase() + booking.serviceType.slice(1)],
+      ['Pickup Location:', booking.pickupLocation],
+      ['Dropoff Location:', booking.dropoffLocation],
+      ['Pickup Date:', new Date(booking.pickupDate).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })],
+      ['Pickup Time:', booking.pickupTime]
+    ];
+    
+    // Add optional fields
     if (booking.passengers) {
-      doc.text(`Passengers: ${booking.passengers}`, 50, 335);
+      bookingDetails.push(['Passengers:', booking.passengers]);
     }
-    
     if (booking.returnDate) {
-      doc.text(`Return Date: ${new Date(booking.returnDate).toLocaleDateString()}`, 50, 350);
+      bookingDetails.push(['Return Date:', new Date(booking.returnDate).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })]);
     }
-    
     if (booking.returnTime) {
-      doc.text(`Return Time: ${booking.returnTime}`, 50, 365);
+      bookingDetails.push(['Return Time:', booking.returnTime]);
     }
-    
     if (booking.distance > 0) {
-      doc.text(`Distance: ${booking.distance} km`, 50, 380);
+      bookingDetails.push(['Distance:', `${booking.distance} km`]);
     }
     
-    // Simple service details
+    let bookingY = 440;
+    bookingDetails.forEach(([label, value]) => {
+      doc.fillColor('#666666')
+         .fontSize(11)
+         .text(label, 50, bookingY);
+      doc.fillColor('#235784')
+         .fontSize(11)
+         .font('Helvetica-Bold')
+         .text(value, 200, bookingY);
+      bookingY += 15;
+    });
+
+    // ===== SERVICE DETAILS SECTION =====
+    
     if (booking.serviceDetails && Object.keys(booking.serviceDetails).length > 0) {
       doc.fillColor('#235784')
-         .fontSize(14)
+         .fontSize(16)
          .font('Helvetica-Bold')
-         .text('Service Details', 50, 400);
+         .text('Service Details', 30, bookingY + 20);
       
       doc.fillColor('#333333')
-         .fontSize(12)
+         .fontSize(11)
          .font('Helvetica');
       
-      let detailY = 420;
+      let serviceY = bookingY + 40;
       Object.entries(booking.serviceDetails).forEach(([key, value]) => {
         if (value) {
-          doc.text(`${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`, 50, detailY);
-          detailY += 15;
+          doc.fillColor('#666666')
+             .text(`${key.charAt(0).toUpperCase() + key.slice(1)}:`, 50, serviceY);
+          doc.fillColor('#235784')
+             .text(value, 200, serviceY);
+          serviceY += 15;
         }
       });
     }
     
     if (booking.additionalNotes) {
-      doc.text(`Additional Notes: ${booking.additionalNotes}`, 50, 500);
+      doc.fillColor('#235784')
+         .fontSize(14)
+         .font('Helvetica-Bold')
+         .text('Additional Notes', 30, bookingY + 60);
+      
+      doc.fillColor('#333333')
+         .fontSize(11)
+         .font('Helvetica')
+         .text(booking.additionalNotes, 50, bookingY + 80, { width: 500 });
     }
+
+    // ===== PRICING SECTION =====
     
-    // Simple pricing
-    doc.fillColor('#235784')
-       .fontSize(16)
-       .font('Helvetica-Bold')
-       .text('Total Amount', 50, 550);
+    // Pricing background
+    doc.rect(30, 650, 540, 60)
+       .fill('#235784'); // Blue background
     
-    doc.fillColor('#333333')
+    doc.fillColor('#FFFFFF')
        .fontSize(18)
        .font('Helvetica-Bold')
-       .text(`LKR ${booking.totalPrice.toLocaleString()}`, 50, 570);
+       .text('Total Amount', 50, 670);
+    
+    doc.fillColor('#F7AA00')
+       .fontSize(24)
+       .font('Helvetica-Bold')
+       .text(`LKR ${booking.totalPrice.toLocaleString()}`, 400, 670);
 
-    // Simple footer
+    // ===== FOOTER SECTION =====
+    
     doc.fillColor('#666666')
        .fontSize(10)
        .font('Helvetica')
-       .text('Thank you for choosing Giraffe Cabs!', 50, 600)
-       .text('Generated on: ' + new Date().toLocaleDateString(), 50, 615);
+       .text('Thank you for choosing Giraffe Cabs!', 30, 730)
+       .text('For any queries, contact us at: info@giraffecabs.com', 30, 745)
+       .text(`Invoice generated on: ${new Date().toLocaleDateString('en-US', { 
+         year: 'numeric', 
+         month: 'long', 
+         day: 'numeric',
+         hour: '2-digit',
+         minute: '2-digit'
+       })}`, 30, 760);
 
     doc.end();
   } catch (error) {
