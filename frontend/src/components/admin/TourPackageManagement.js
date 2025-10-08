@@ -349,6 +349,58 @@ const TourPackageManagement = ({
   });
 
 
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    
+    if (files.length === 0) return;
+    
+    // Validate file size and type
+    const validFiles = files.filter(file => {
+      if (!file.type.startsWith('image/')) {
+        alert(`${file.name} is not an image file`);
+        return false;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert(`${file.name} is too large. Maximum size is 5MB`);
+        return false;
+      }
+      return true;
+    });
+    
+    if (validFiles.length === 0) return;
+    
+    // Check total number of images
+    const totalImages = uploadedImages.length + validFiles.length;
+    if (totalImages > 10) {
+      alert('Maximum 10 images allowed');
+      return;
+    }
+    
+    // Create preview URLs and add to uploadedImages
+    const newImages = validFiles.map(file => ({
+      file: file,
+      preview: URL.createObjectURL(file)
+    }));
+    
+    setUploadedImages(prev => [...prev, ...newImages]);
+  };
+
+  const removeImage = (index) => {
+    setUploadedImages(prev => {
+      const newImages = [...prev];
+      URL.revokeObjectURL(newImages[index].preview);
+      newImages.splice(index, 1);
+      return newImages;
+    });
+  };
+
+  const removeCurrentImage = (index) => {
+    setPackageData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+  };
+
   const handleImageSubmit = async () => {
     if (uploadedImages.length === 0) {
       return [];
@@ -1298,6 +1350,71 @@ const TourPackageManagement = ({
                 >
                   <i className="fas fa-plus"></i> Add Excluded Service
                 </button>
+              </div>
+
+              {/* Image Upload */}
+              <div className="form-section">
+                <h3>Package Images</h3>
+                <div className="image-upload-section">
+                  <div className="file-upload-area">
+                    <input
+                      type="file"
+                      id="imageUpload"
+                      accept="image/*"
+                      multiple
+                      onChange={handleFileChange}
+                      style={{ display: 'none' }}
+                    />
+                    <label htmlFor="imageUpload" className="file-upload-label">
+                      <i className="fas fa-cloud-upload-alt"></i>
+                      <span>Choose Images</span>
+                      <small>Select multiple images (max 10, 5MB each)</small>
+                    </label>
+                  </div>
+                  
+                  {uploadedImages.length > 0 && (
+                    <div className="uploaded-images-preview">
+                      <h4>Selected Images:</h4>
+                      <div className="image-preview-grid">
+                        {uploadedImages.map((imageData, index) => (
+                          <div key={index} className="image-preview-item">
+                            <img src={imageData.preview} alt={`Preview ${index + 1}`} />
+                            <button
+                              type="button"
+                              className="remove-image-btn"
+                              onClick={() => removeImage(index)}
+                            >
+                              <i className="fas fa-times"></i>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {packageData.images && packageData.images.length > 0 && (
+                    <div className="current-images">
+                      <h4>Current Images:</h4>
+                      <div className="image-preview-grid">
+                        {packageData.images.map((image, index) => (
+                          <div key={index} className="image-preview-item">
+                            <img 
+                              src={typeof image === 'string' ? image : image.url} 
+                              alt={`Current ${index + 1}`} 
+                            />
+                            <button
+                              type="button"
+                              className="remove-image-btn"
+                              onClick={() => removeCurrentImage(index)}
+                            >
+                              <i className="fas fa-times"></i>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Status */}

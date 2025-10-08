@@ -379,23 +379,21 @@ const TourPackages = () => {
               {filteredPackages.map(pkg => (
                 <div key={pkg._id} className="package-card">
                   <div className="package-image">
-                    {pkg.images && pkg.images.length > 0 ? (
-                      <img 
-                        src={typeof pkg.images[0] === 'string' ? pkg.images[0] : (pkg.images[0].url || pkg.images[0])} 
-                        alt={pkg.packageName}
-                        onError={(e) => {
-                          console.log('Image failed to load:', e.target.src);
-                          e.target.style.display = 'none';
-                          e.target.nextSibling.style.display = 'flex';
-                        }}
-                        onLoad={() => {
-                          console.log('Image loaded successfully');
-                        }}
-                      />
-                    ) : null}
-                    <div className="placeholder-image" style={{ display: pkg.images && pkg.images.length > 0 ? 'none' : 'flex' }}>
-                      <i className="fas fa-mountain"></i>
-                    </div>
+                    <img 
+                      src={
+                        pkg.images && pkg.images.length > 0 
+                          ? (typeof pkg.images[0] === 'string' ? pkg.images[0] : (pkg.images[0].url || pkg.images[0]))
+                          : '/tour.png'
+                      }
+                      alt={pkg.packageName}
+                      onError={(e) => {
+                        console.log('Image failed to load:', e.target.src);
+                        e.target.src = '/tour.png';
+                      }}
+                      onLoad={() => {
+                        console.log('Image loaded successfully');
+                      }}
+                    />
                     <div className="package-badge">
                       <span className={`category-badge category-${pkg.tourCategory.toLowerCase()}`}>
                         {pkg.tourCategory}
