@@ -790,58 +790,58 @@ const generateBookingInvoice = async (req, res) => {
     // ===== ATTRACTIVE HEADER DESIGN =====
     
     // Main header background with gradient effect
-    doc.rect(30, 30, 540, 120)
+    doc.rect(30, 30, 540, 100)
        .fill('#235784'); // Blue background
     
     // Decorative top stripe
-    doc.rect(30, 30, 540, 15)
+    doc.rect(30, 30, 540, 12)
        .fill('#F7AA00'); // Gold stripe
     
     // Decorative bottom stripe
-    doc.rect(30, 135, 540, 15)
+    doc.rect(30, 118, 540, 12)
        .fill('#40A8C4'); // Light blue stripe
     
     // Company logo area with white background
-    doc.rect(50, 50, 200, 80)
+    doc.rect(50, 50, 200, 60)
        .fill('#FFFFFF'); // White background for logo area
     
     // Company logo text with attractive styling
     doc.fillColor('#235784')
-       .fontSize(36)
-       .font('Helvetica-Bold')
-       .text('🦒 GIRAFFE', 60, 60);
-    
-    doc.fillColor('#F7AA00')
        .fontSize(28)
        .font('Helvetica-Bold')
-       .text('CABS', 60, 90);
+       .text('GIRAFFE', 60, 55);
+    
+    doc.fillColor('#F7AA00')
+       .fontSize(20)
+       .font('Helvetica-Bold')
+       .text('CABS', 60, 75);
     
     // Company tagline
     doc.fillColor('#235784')
-       .fontSize(12)
+       .fontSize(9)
        .font('Helvetica')
-       .text('Your Trusted Travel Partner', 60, 115);
+       .text('Your Trusted Travel Partner', 60, 95);
     
     // Invoice title with attractive styling
-    doc.rect(400, 50, 160, 80)
+    doc.rect(400, 50, 160, 60)
        .fill('#F7AA00'); // Gold background
     
     doc.fillColor('#235784')
-       .fontSize(18)
+       .fontSize(16)
        .font('Helvetica-Bold')
-       .text('BOOKING', 420, 70)
-       .text('INVOICE', 420, 90);
+       .text('BOOKING', 420, 65)
+       .text('INVOICE', 420, 80);
     
     doc.fillColor('#235784')
-       .fontSize(10)
+       .fontSize(9)
        .font('Helvetica')
-       .text(`#${booking._id.toString().slice(-8)}`, 420, 110);
+       .text(`#${booking._id.toString().slice(-8)}`, 420, 95);
     
     // Invoice details section
     doc.fillColor('#235784')
        .fontSize(14)
        .font('Helvetica-Bold')
-       .text('Invoice Details', 30, 180);
+       .text('Invoice Details', 30, 150);
     
     // Invoice details table
     doc.fillColor('#333333')
@@ -859,7 +859,7 @@ const generateBookingInvoice = async (req, res) => {
       ['Payment Method:', booking.paymentMethod ? booking.paymentMethod.toUpperCase() : 'CASH']
     ];
     
-    let detailY = 200;
+    let detailY = 170;
     invoiceDetails.forEach(([label, value]) => {
       doc.fillColor('#666666')
          .text(label, 30, detailY);
@@ -873,25 +873,25 @@ const generateBookingInvoice = async (req, res) => {
     doc.fillColor('#235784')
        .fontSize(16)
        .font('Helvetica-Bold')
-       .text('Customer Information', 30, 280);
+       .text('Customer Information', 30, 250);
     
     // Customer info background
-    doc.rect(30, 300, 540, 80)
+    doc.rect(30, 270, 540, 70)
        .fill('#f8f9fa'); // Light gray background
     
     doc.fillColor('#333333')
        .fontSize(12)
        .font('Helvetica-Bold')
-       .text(`${booking.user.firstName} ${booking.user.lastName}`, 50, 320);
+       .text(`${booking.user.firstName} ${booking.user.lastName}`, 50, 290);
     
     doc.fillColor('#666666')
        .fontSize(11)
        .font('Helvetica')
-       .text(`Email: ${booking.user.email}`, 50, 340)
-       .text(`Phone: ${booking.user.phone}`, 50, 355);
+       .text(`Email: ${booking.user.email}`, 50, 310)
+       .text(`Phone: ${booking.user.phone}`, 50, 325);
     
     if (booking.user.address) {
-      doc.text(`Address: ${booking.user.address}`, 50, 370);
+      doc.text(`Address: ${booking.user.address}`, 50, 340);
     }
 
     // ===== BOOKING DETAILS SECTION =====
@@ -899,10 +899,10 @@ const generateBookingInvoice = async (req, res) => {
     doc.fillColor('#235784')
        .fontSize(16)
        .font('Helvetica-Bold')
-       .text('Booking Details', 30, 400);
+       .text('Booking Details', 30, 360);
     
     // Booking details background
-    doc.rect(30, 420, 540, 120)
+    doc.rect(30, 380, 540, 100)
        .fill('#ffffff'); // White background
     
     // Booking details table
@@ -936,7 +936,7 @@ const generateBookingInvoice = async (req, res) => {
       bookingDetails.push(['Distance:', `${booking.distance} km`]);
     }
     
-    let bookingY = 440;
+    let bookingY = 400;
     bookingDetails.forEach(([label, value]) => {
       doc.fillColor('#666666')
          .fontSize(11)
@@ -987,33 +987,33 @@ const generateBookingInvoice = async (req, res) => {
     // ===== PRICING SECTION =====
     
     // Pricing background
-    doc.rect(30, 650, 540, 60)
+    doc.rect(30, 600, 540, 50)
        .fill('#235784'); // Blue background
     
     doc.fillColor('#FFFFFF')
-       .fontSize(18)
+       .fontSize(16)
        .font('Helvetica-Bold')
-       .text('Total Amount', 50, 670);
+       .text('Total Amount', 50, 620);
     
     doc.fillColor('#F7AA00')
-       .fontSize(24)
+       .fontSize(20)
        .font('Helvetica-Bold')
-       .text(`LKR ${booking.totalPrice.toLocaleString()}`, 400, 670);
+       .text(`LKR ${booking.totalPrice.toLocaleString()}`, 400, 620);
 
     // ===== FOOTER SECTION =====
     
     doc.fillColor('#666666')
        .fontSize(10)
        .font('Helvetica')
-       .text('Thank you for choosing Giraffe Cabs!', 30, 730)
-       .text('For any queries, contact us at: info@giraffecabs.com', 30, 745)
+       .text('Thank you for choosing Giraffe Cabs!', 30, 670)
+       .text('For any queries, contact us at: info@giraffecabs.com', 30, 685)
        .text(`Invoice generated on: ${new Date().toLocaleDateString('en-US', { 
          year: 'numeric', 
          month: 'long', 
          day: 'numeric',
          hour: '2-digit',
          minute: '2-digit'
-       })}`, 30, 760);
+       })}`, 30, 700);
 
     doc.end();
   } catch (error) {
