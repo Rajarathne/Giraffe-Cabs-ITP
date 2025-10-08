@@ -65,6 +65,14 @@
   filter: drop-shadow(0 0 10px rgba(247, 170, 0, 0.4));
 }
 
+.logo-image {
+  width: 40px;
+  height: 40px;
+  margin-right: 12px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(247, 170, 0, 0.4));
+}
+
 .nav-menu {
   display: flex;
   gap: 2.5rem;
@@ -271,74 +279,101 @@
   padding: 0 1rem;
 }
 
-/* Filters Section - Compact Horizontal */
-.filters-section {
-  background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
-  padding: 0.8rem 0;
-  border-bottom: 2px solid #235784;
-  box-shadow: 0 4px 15px rgba(35, 87, 132, 0.1);
+/* Compact Search and Filter Bar */
+.compact-search-filter {
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+  padding: 1rem 0;
   margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.filters-grid {
+.search-filter-row {
   display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  gap: 0.8rem;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 0.8rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(35, 87, 132, 0.15);
-  border: 1px solid rgba(35, 87, 132, 0.2);
+  align-items: center;
+  gap: 1rem;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  min-width: 140px;
+.search-box {
+  position: relative;
   flex: 1;
+  max-width: 300px;
 }
 
-.filter-group label {
-  color: #235784;
-  font-weight: 600;
-  margin-bottom: 0.3rem;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.search-box i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  font-size: 0.9rem;
 }
 
-.filter-group input,
-.filter-group select {
-  padding: 0.5rem;
-  border: 1px solid rgba(35, 87, 132, 0.3);
-  border-radius: 6px;
-  background: white;
-  color: #1a1a1a;
-  font-size: 0.75rem;
+.search-box input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 1px solid #e9ecef;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  background: #f8f9fa;
   transition: all 0.3s ease;
-  outline: none;
-  box-shadow: 0 2px 4px rgba(35, 87, 132, 0.1);
 }
 
-.filter-group input::placeholder {
-  color: #666; /* Darker placeholder for white background */
-}
-
-.filter-group input:focus,
-.filter-group select:focus {
+.search-box input:focus {
   outline: none;
-  border-color: #1E93AB;
+  border-color: #235784;
   background: white;
-  box-shadow: 0 0 8px rgba(30, 147, 171, 0.3);
+  box-shadow: 0 0 0 3px rgba(35, 87, 132, 0.1);
+}
+
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.filter-controls select {
+  padding: 0.6rem 1rem;
+  border: 1px solid #e9ecef;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  background: white;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.filter-controls select:focus {
+  outline: none;
+  border-color: #235784;
+  box-shadow: 0 0 0 2px rgba(35, 87, 132, 0.1);
+}
+
+.clear-filters-btn {
+  padding: 0.6rem 1rem;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.3s ease;
+}
+
+.clear-filters-btn:hover {
+  background: #545b62;
   transform: translateY(-1px);
 }
 
-.filter-group select option {
-  background: white;
-  color: #1a1a1a; /* Dark text for options */
+.clear-filters-btn i {
+  font-size: 0.8rem;
 }
 
 /* Tour Packages Grid */
@@ -394,8 +429,8 @@
 /* Packages Grid */
 .packages-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Reduced from 350px */
-  gap: 1.5rem; /* Reduced from 2rem */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); /* Slightly smaller for better proportions */
+  gap: 1.2rem; /* Reduced gap for tighter spacing */
 }
 
 /* Package Card - Compact */
@@ -417,14 +452,15 @@
 .package-image {
   position: relative;
   width: 100%;
-  height: 180px; /* Reduced from 220px */
+  height: 180px; /* Increased to provide more space for full image display */
   overflow: hidden;
+  background: #f8f9fa; /* Added background color for better contrast */
 }
 
 .package-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain; /* Changed from cover to contain to show full image */
   transition: transform 0.3s ease;
 }
 
@@ -491,7 +527,7 @@
 
 /* Package Content - Compact */
 .package-content {
-  padding: 1.5rem; /* Reduced from 2rem */
+  padding: 1.2rem; /* Reduced from 1.5rem for more compact layout */
 }
 
 .package-content h3 {
@@ -911,6 +947,11 @@
     font-size: 1.8rem;
   }
   
+  .logo-image {
+    width: 35px;
+    height: 35px;
+  }
+  
   .nav-menu {
     position: absolute;
     top: 100%;
@@ -969,19 +1010,33 @@
     font-size: 0.9rem; /* Reduced from 1rem */
   }
   
-  .filters-grid {
+  .search-filter-row {
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 1rem;
+    align-items: stretch;
   }
   
-  .filter-group {
-    min-width: auto;
-    width: 100%;
+  .search-box {
+    max-width: none;
+  }
+  
+  .filter-controls {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .filter-controls select {
+    min-width: 100px;
+    flex: 1;
   }
   
   .packages-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+  
+  .package-image {
+    height: 160px; /* Increased for mobile to show full tour.png */
   }
   
   .package-details {
@@ -1023,24 +1078,24 @@
 }
 
 @media (max-width: 480px) {
-  .filters-section {
-    padding: 0.6rem 0;
+  .compact-search-filter {
+    padding: 0.75rem 0;
   }
   
-  .filters-grid {
-    padding: 0.6rem;
-    gap: 0.6rem;
+  .search-box input {
+    padding: 0.6rem 0.8rem 0.6rem 2rem;
+    font-size: 0.85rem;
   }
   
-  .filter-group label {
-    font-size: 0.7rem;
-    margin-bottom: 0.2rem;
+  .filter-controls select {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+    min-width: 80px;
   }
   
-  .filter-group input,
-  .filter-group select {
-    padding: 0.4rem;
-    font-size: 0.7rem;
+  .clear-filters-btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
   }
   
   .tour-packages-header h1 {

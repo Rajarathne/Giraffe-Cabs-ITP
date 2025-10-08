@@ -199,7 +199,7 @@ const TourPackages = () => {
       <nav className="navbar">
         <div className="nav-container">
           <div className="nav-logo">
-            <i className="fas fa-mountain"></i>
+            <img src="/logo.png" alt="Giraffe Cabs Logo" className="logo-image" />
             <span>Giraffe Cabs</span>
           </div>
           
@@ -265,17 +265,24 @@ const TourPackages = () => {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="filters-section">
+      {/* Compact Search and Filter Bar */}
+      <div className="compact-search-filter">
         <div className="container">
-          <div className="filters-grid">
-            <div className="filter-group">
-              <label htmlFor="category">Category</label>
+          <div className="search-filter-row">
+            <div className="search-box">
+              <i className="fas fa-search"></i>
+              <input
+                type="text"
+                placeholder="Search destinations..."
+                value={filters.destination}
+                onChange={(e) => handleFilterChange({ target: { name: 'destination', value: e.target.value } })}
+              />
+            </div>
+            
+            <div className="filter-controls">
               <select
-                id="category"
-                name="category"
                 value={filters.category}
-                onChange={handleFilterChange}
+                onChange={(e) => handleFilterChange({ target: { name: 'category', value: e.target.value } })}
               >
                 <option value="">All Categories</option>
                 <option value="Adventure">Adventure</option>
@@ -285,66 +292,20 @@ const TourPackages = () => {
                 <option value="Family">Family</option>
                 <option value="Corporate">Corporate</option>
               </select>
-            </div>
-            
-            <div className="filter-group">
-              <label htmlFor="type">Type</label>
+              
               <select
-                id="type"
-                name="type"
                 value={filters.type}
-                onChange={handleFilterChange}
+                onChange={(e) => handleFilterChange({ target: { name: 'type', value: e.target.value } })}
               >
                 <option value="">All Types</option>
                 <option value="One-day">One-day</option>
                 <option value="Multi-day">Multi-day</option>
                 <option value="Seasonal">Seasonal</option>
               </select>
-            </div>
-            
-            <div className="filter-group">
-              <label htmlFor="destination">Destination</label>
-              <input
-                type="text"
-                id="destination"
-                name="destination"
-                value={filters.destination}
-                onChange={handleFilterChange}
-                placeholder="Search destination..."
-              />
-            </div>
-            
-            <div className="filter-group">
-              <label htmlFor="minPrice">Min Price (LKR)</label>
-              <input
-                type="number"
-                id="minPrice"
-                name="minPrice"
-                value={filters.minPrice}
-                onChange={handleFilterChange}
-                placeholder="Min price"
-              />
-            </div>
-            
-            <div className="filter-group">
-              <label htmlFor="maxPrice">Max Price (LKR)</label>
-              <input
-                type="number"
-                id="maxPrice"
-                name="maxPrice"
-                value={filters.maxPrice}
-                onChange={handleFilterChange}
-                placeholder="Max price"
-              />
-            </div>
-            
-            <div className="filter-group">
-              <label htmlFor="days">Days</label>
+              
               <select
-                id="days"
-                name="days"
                 value={filters.days}
-                onChange={handleFilterChange}
+                onChange={(e) => handleFilterChange({ target: { name: 'days', value: e.target.value } })}
               >
                 <option value="">All Days</option>
                 <option value="1">1 Day</option>
@@ -353,6 +314,21 @@ const TourPackages = () => {
                 <option value="4">4 Days</option>
                 <option value="5">5+ Days</option>
               </select>
+              
+              <button 
+                className="clear-filters-btn"
+                onClick={() => setFilters({
+                  category: '',
+                  type: '',
+                  destination: '',
+                  minPrice: '',
+                  maxPrice: '',
+                  days: ''
+                })}
+              >
+                <i className="fas fa-times"></i>
+                Clear
+              </button>
             </div>
           </div>
         </div>
