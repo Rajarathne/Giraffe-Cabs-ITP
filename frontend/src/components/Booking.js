@@ -508,8 +508,9 @@ const Booking = () => {
         </div>
 
         <div className="booking-content">
-          <div className="search-filter-section">
-            <div className="search-container">
+          {/* Compact Search and Filter Bar */}
+          <div className="compact-search-filter">
+            <div className="search-filter-row">
               <div className="search-box">
                 <i className="fas fa-search"></i>
                 <input
@@ -517,31 +518,34 @@ const Booking = () => {
                   placeholder="Search services..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="search-input"
                 />
               </div>
-            </div>
-            
-            <div className="filter-container">
-              <div className="filter-group">
-                <label htmlFor="priceFilter">Price Range:</label>
+              
+              <div className="filter-controls">
                 <select
-                  id="priceFilter"
                   value={priceFilter}
                   onChange={(e) => setPriceFilter(e.target.value)}
-                  className="filter-select"
                 >
                   <option value="all">All Prices</option>
                   <option value="low">Low (≤ LKR 2,000)</option>
                   <option value="medium">Medium (LKR 2,001 - 5,000)</option>
                   <option value="high">High (&gt; LKR 5,000)</option>
                 </select>
-              </div>
-              
-              <div className="filter-results">
-                <span className="results-count">
+                
+                <div className="results-count">
                   {filteredServices.length} service{filteredServices.length !== 1 ? 's' : ''} found
-                </span>
+                </div>
+                
+                <button 
+                  className="clear-filters-btn"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setPriceFilter('all');
+                  }}
+                >
+                  <i className="fas fa-times"></i>
+                  Clear
+                </button>
               </div>
             </div>
           </div>
