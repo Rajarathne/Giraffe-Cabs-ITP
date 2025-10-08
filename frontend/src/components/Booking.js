@@ -450,7 +450,7 @@ const Booking = () => {
       <nav className="navbar">
         <div className="nav-container">
           <div className="nav-logo" onClick={() => navigate('/home')}>
-            <i className="fas fa-car"></i>
+            <img src="/logo.png" alt="Giraffe Cabs Logo" className="logo-image" />
             Giraffe Cabs
           </div>
           <div className="nav-menu">
