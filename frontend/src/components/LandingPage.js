@@ -41,9 +41,7 @@ const LandingPage = () => {
       <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
         <div className="nav-container">
           <div className="nav-logo">
-            <div className="logo-icon">
-              <i className="fas fa-taxi"></i>
-            </div>
+            <img src="/logo.png" alt="Giraffe Cabs" className="logo-image" />
             <span className="logo-text">Giraffe Cabs</span>
           </div>
           <div className="nav-menu">

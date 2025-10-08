@@ -180,6 +180,17 @@
   justify-content: space-between;
 }
 
+/* Logo Image - Circular */
+.logo-image {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.5rem;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 .sidebar-brand {
   display: flex;
   align-items: center;

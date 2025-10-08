@@ -1245,6 +1245,7 @@ const AdminDashboard = () => {
       <div className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''} ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-brand">
+            <img src="/logo.png" alt="Giraffe Cabs" className="logo-image" />
             <span>Admin Panel</span>
           </div>
           <button 

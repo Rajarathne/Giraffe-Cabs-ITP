@@ -47,6 +47,17 @@
   box-sizing: border-box;
 }
 
+/* Logo Image - Circular */
+.logo-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.5rem;
+  border: 2px solid #F7AA00;
+  box-shadow: 0 2px 8px rgba(247, 170, 0, 0.3);
+}
+
 .nav-logo {
   display: flex;
   align-items: center;

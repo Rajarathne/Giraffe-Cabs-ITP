@@ -353,7 +353,7 @@ const Home = () => {
       <nav className="navbar">
         <div className="nav-container">
           <div className="nav-logo">
-            <i className="fas fa-taxi"></i>
+            <img src="/logo.png" alt="Giraffe Cabs" className="logo-image" />
             <span>Giraffe Cabs</span>
           </div>
           <div className="nav-menu">
