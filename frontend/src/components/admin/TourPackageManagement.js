@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './TourPackageManagement.css';
+import './AdminFormStyles.css';
 
 const TourPackageManagement = ({ 
   tourPackages, 

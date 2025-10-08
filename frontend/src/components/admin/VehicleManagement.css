@@ -457,22 +457,22 @@
 
 .form-group label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
   font-weight: 600;
   color: #0D1282;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 0.6rem;
+  padding: 0.5rem;
   border: 2px solid #0D1282;
-  border-radius: 10px;
-  font-size: 0.9rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
   transition: all 0.3s ease;
   background: #EEEDED;
   color: #333 !important;
@@ -704,17 +704,18 @@
 
 .modal-content {
   background: #EEEDED;
-  border-radius: 15px;
-  max-width: 520px;
+  border-radius: 12px;
+  max-width: 480px;
   width: 100%;
-  max-height: 90vh;
+  max-height: 85vh;
   overflow-y: auto;
   position: relative;
   border: 2px solid #0D1282;
+  margin: auto;
 }
 
 .large-modal {
-  max-width: 720px;
+  max-width: 650px;
 }
 
 .modal-close {
@@ -743,18 +744,19 @@
 }
 
 .modal-content h2 {
-  margin: 0 0 1rem 0;
-  padding: 1.25rem 1.25rem 0 1.25rem;
+  margin: 0 0 0.75rem 0;
+  padding: 1rem 1rem 0 1rem;
   color: #0D1282;
   font-weight: 700;
   text-align: center;
   border-bottom: 2px solid #0D1282;
-  padding-bottom: 0.75rem;
-  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
 }
 
 .modal-content form {
-  padding: 0 1.25rem 1.25rem 1.25rem;
+  padding: 0 1rem 1rem 1rem;
   background: #EEEDED;
 }
 
@@ -893,12 +895,12 @@
 
 /* Submit button styling */
 .btn-full {
-  margin-top: 1.25rem;
-  padding: 0.8rem 1.25rem;
-  font-size: 1rem;
+  margin-top: 1rem;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 /* Vehicle Reports Styles */

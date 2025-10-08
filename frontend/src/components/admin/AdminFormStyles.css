@@ -1,0 +1,187 @@
+/* Shared Admin Form Styles - Small and Centered */
+
+/* Modal Overlay - Centers the modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+/* Modal Content - Small and centered */
+.modal-content {
+  background: #EEEDED;
+  border-radius: 12px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  border: 2px solid #0D1282;
+  margin: auto;
+}
+
+.large-modal {
+  max-width: 650px;
+}
+
+/* Modal Header - Smaller */
+.modal-content h2 {
+  margin: 0 0 0.75rem 0;
+  padding: 1rem 1rem 0 1rem;
+  color: #0D1282;
+  font-weight: 700;
+  text-align: center;
+  border-bottom: 2px solid #0D1282;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+/* Modal Form - Compact padding */
+.modal-content form {
+  padding: 0 1rem 1rem 1rem;
+  background: #EEEDED;
+}
+
+/* Form Groups - Smaller spacing */
+.form-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Form Labels - Smaller text */
+.form-group label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+  color: #0D1282;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Form Inputs - Smaller text and padding */
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid #0D1282;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+  background: #EEEDED;
+  color: #333 !important;
+  font-weight: 500;
+  box-sizing: border-box;
+}
+
+/* Form Rows - Tighter grid */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Submit Button - Smaller */
+.btn-full {
+  margin-top: 1rem;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Modal Close Button - Smaller */
+.modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: #D71313;
+  border: 2px solid #D71313;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #EEEDED;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  background: #0D1282;
+  border-color: #0D1282;
+  transform: scale(1.1);
+}
+
+/* Error Messages - Smaller */
+.error-message {
+  color: #D71313;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* File Upload - Smaller */
+.file-upload-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 2px dashed #0D1282;
+  border-radius: 8px;
+  background: #EEEDED;
+  color: #0D1282;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  text-align: center;
+  min-height: 50px;
+  font-size: 0.8rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modal-content {
+    margin: 0.5rem;
+    max-width: calc(100vw - 1rem);
+    border-radius: 10px;
+  }
+  
+  .modal-content h2 {
+    padding: 0.75rem 0.75rem 0 0.75rem;
+    font-size: 1.1rem;
+  }
+  
+  .modal-content form {
+    padding: 0 0.75rem 0.75rem 0.75rem;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .form-group {
+    margin-bottom: 0.75rem;
+  }
+}

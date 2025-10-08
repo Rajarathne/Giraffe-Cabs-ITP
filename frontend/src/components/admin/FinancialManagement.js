@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './FinancialManagement.css';
+import './AdminFormStyles.css';
 
 const FinancialManagement = ({ 
   financialData, 

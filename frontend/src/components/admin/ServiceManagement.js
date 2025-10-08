@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './ServiceManagement.css';
+import './AdminFormStyles.css';
 
 const ServiceManagement = ({ 
   serviceRecords, 

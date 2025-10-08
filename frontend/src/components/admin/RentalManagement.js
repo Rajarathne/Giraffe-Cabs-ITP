@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import axios from 'axios';
 import './RentalManagement.css';
+import './AdminFormStyles.css';
 
 const RentalManagement = ({ 
   rentals, 

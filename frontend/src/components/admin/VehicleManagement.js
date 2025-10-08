@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './VehicleManagement.css';
+import './AdminFormStyles.css';
 
 const VehicleManagement = ({ 
   vehicles, 
