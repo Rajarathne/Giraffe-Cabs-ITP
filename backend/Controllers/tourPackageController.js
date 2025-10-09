@@ -24,6 +24,9 @@ const getTourPackageById = async (req, res) => {
   }
 };
 
+const Notification = require('../Models/Notification');
+const User = require('../Models/User');
+
 // ✅ Create new tour package
 const createTourPackage = async (req, res) => {
   try {
@@ -33,6 +36,24 @@ const createTourPackage = async (req, res) => {
     };
     const newPkg = new TourPackage(packageData);
     const savedPkg = await newPkg.save();
+
+    // Notify all active customers about the new tour package (non-blocking)
+    try {
+      const customers = await User.find({ role: 'customer', isActive: true }).select('_id');
+      if (customers.length > 0) {
+        const notifications = customers.map(u => ({
+          user: u._id,
+          type: 'system',
+          title: 'New Tour Package Available',
+          message: `${savedPkg.packageName || 'A new package'} to ${savedPkg.destination || 'a destination'} is now available.`,
+          data: { tourPackageId: savedPkg._id }
+        }));
+        await Notification.insertMany(notifications, { ordered: false });
+      }
+    } catch (notifyErr) {
+      console.warn('Failed to create notifications for new tour package:', notifyErr?.message || notifyErr);
+    }
+
     res.status(201).json(savedPkg);
   } catch (err) {
     res.status(400).json({ error: err.message });

@@ -14,6 +14,7 @@ const TourBookingManagement = ({
     finalPrice: '',
     adminNotes: ''
   });
+  const [validationErrors, setValidationErrors] = useState({});
 
   // Search and filter state
   const [searchTerm, setSearchTerm] = useState('');
@@ -32,8 +33,28 @@ const TourBookingManagement = ({
     setShowModal(true);
   };
 
+  const validateActionData = (data) => {
+    const errors = {};
+    if (!data.status) {
+      errors.status = 'Status is required';
+    }
+    if (data.finalPrice !== '' && (isNaN(Number(data.finalPrice)) || Number(data.finalPrice) < 0)) {
+      errors.finalPrice = 'Final price must be a valid non-negative number';
+    }
+    if (data.adminNotes && data.adminNotes.length > 500) {
+      errors.adminNotes = 'Notes must be 500 characters or less';
+    }
+    return errors;
+  };
+
   const handleActionSubmit = async (e) => {
     e.preventDefault();
+    setValidationErrors({});
+    const errors = validateActionData(actionData);
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
     try {
       const token = localStorage.getItem('authToken');
       const headers = { Authorization: `Bearer ${token}` };
@@ -464,6 +485,9 @@ const TourBookingManagement = ({
                     <option value="cancelled">Cancelled</option>
                     <option value="completed">Completed</option>
                   </select>
+                  {validationErrors.status && (
+                    <div className="error-message">{validationErrors.status}</div>
+                  )}
                 </div>
                 
                 <div className="form-group">
@@ -478,6 +502,9 @@ const TourBookingManagement = ({
                     placeholder="Enter final price"
                   />
                   <small>Leave empty to keep current price</small>
+                  {validationErrors.finalPrice && (
+                    <div className="error-message">{validationErrors.finalPrice}</div>
+                  )}
                 </div>
               </div>
               
@@ -490,6 +517,9 @@ const TourBookingManagement = ({
                   rows="4"
                   placeholder="Add notes about this booking..."
                 />
+                {validationErrors.adminNotes && (
+                  <div className="error-message">{validationErrors.adminNotes}</div>
+                )}
               </div>
               
               <div className="form-actions">

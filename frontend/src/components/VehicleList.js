@@ -385,39 +385,21 @@ const VehicleList = () => {
           <p>Choose from our fleet of professional vehicles</p>
         </div>
 
-        {/* Search and Filter Bar */}
-        <div className="search-filter-bar">
-          <div className="search-section">
-            <div className="search-input-group">
-              <i className="fas fa-search search-icon"></i>
+        {/* Compact Search and Filter Bar */}
+        <div className="compact-search-filter">
+          <div className="search-filter-row">
+            <div className="search-box">
+              <i className="fas fa-search"></i>
               <input
                 type="text"
-                placeholder="Search vehicles by brand, model, number, type, color, or price..."
+                placeholder="Search vehicles..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-input"
               />
-              {searchTerm && (
-                <button 
-                  className="clear-search-btn"
-                  onClick={() => setSearchTerm('')}
-                  title="Clear search"
-                >
-                  <i className="fas fa-times"></i>
-                </button>
-              )}
             </div>
-          </div>
-          
-          <div className="filter-section">
-            <div className="filter-group">
-              <label htmlFor="vehicle-type-filter">Type:</label>
-              <select
-                id="vehicle-type-filter"
-                value={vehicleTypeFilter}
-                onChange={(e) => setVehicleTypeFilter(e.target.value)}
-                className="filter-select"
-              >
+
+            <div className="filter-controls">
+              <select value={vehicleTypeFilter} onChange={(e) => setVehicleTypeFilter(e.target.value)}>
                 <option value="all">All Types</option>
                 <option value="car">Car</option>
                 <option value="van">Van</option>
@@ -425,43 +407,30 @@ const VehicleList = () => {
                 <option value="bike">Bike</option>
                 <option value="lorry">Lorry</option>
               </select>
-            </div>
-            
-            <div className="filter-group">
-              <label htmlFor="status-filter">Status:</label>
-              <select
-                id="status-filter"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="filter-select"
-              >
+
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                 <option value="all">All Status</option>
                 <option value="available">Available</option>
                 <option value="booked">Booked</option>
                 <option value="maintenance">Maintenance</option>
                 <option value="unavailable">Unavailable</option>
               </select>
-            </div>
-            
-            <div className="filter-group">
-              <label htmlFor="price-filter">Price Range:</label>
-              <select
-                id="price-filter"
-                value={priceFilter}
-                onChange={(e) => setPriceFilter(e.target.value)}
-                className="filter-select"
-              >
+
+              <select value={priceFilter} onChange={(e) => setPriceFilter(e.target.value)}>
                 <option value="all">All Prices</option>
                 <option value="low">Under LKR 5,000</option>
                 <option value="medium">LKR 5,000 - 15,000</option>
                 <option value="high">Over LKR 15,000</option>
               </select>
-            </div>
-            
-            <div className="filter-results">
-              <span className="results-count">
+
+              <div className="results-count">
                 {filteredVehicles.length} vehicle{filteredVehicles.length !== 1 ? 's' : ''} found
-              </span>
+              </div>
+
+              <button className="clear-filters-btn" onClick={() => { setSearchTerm(''); setVehicleTypeFilter('all'); setStatusFilter('all'); setPriceFilter('all'); }}>
+                <i className="fas fa-times"></i>
+                Clear
+              </button>
             </div>
           </div>
         </div>
