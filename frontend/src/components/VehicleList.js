@@ -355,7 +355,7 @@ const VehicleList = () => {
                 <div className="notif-dropdown" style={{ right: 0 }}>
                   <div className="notif-header">
                     <span>Notifications</span>
-                    <button className="mark-read" onClick={async ()=>{ try { const token = localStorage.getItem('authToken'); await axios.put('/api/notifications/read-all',{}, { headers: { Authorization: `Bearer ${token}` } }); const res = await axios.get('/api/notifications', { headers: { Authorization: `Bearer ${token}` } }); setNotifications(res.data);} catch(e){} }}>
+                    <button className="mark-read" onClick={async ()=>{ try { const token = localStorage.getItem('authToken'); await axios.put('/api/notifications/read-all',{}, { headers: { Authorization: `Bearer ${token}` } }); setNotifications({ unreadCount: 0, items: [] }); } catch(e){} finally { setShowNotifications(false); setShowProfileDropdown(false); } }}>
                       Mark all read
                     </button>
                   </div>
@@ -364,7 +364,7 @@ const VehicleList = () => {
                       <div className="notif-empty">No notifications</div>
                     ) : (
                       (notifications.items || []).map(n => (
-                        <div key={n._id} className={`notif-item ${n.isRead ? '' : 'unread'}`} onClick={async ()=>{ try { const token = localStorage.getItem('authToken'); await axios.put(`/api/notifications/${n._id}/read`,{}, { headers: { Authorization: `Bearer ${token}` } }); const res = await axios.get('/api/notifications', { headers: { Authorization: `Bearer ${token}` } }); setNotifications(res.data);} catch(e){} }}>
+                        <div key={n._id} className={`notif-item ${n.isRead ? '' : 'unread'}`} onClick={async ()=>{ try { const token = localStorage.getItem('authToken'); await axios.put(`/api/notifications/${n._id}/read`,{}, { headers: { Authorization: `Bearer ${token}` } }); const res = await axios.get('/api/notifications', { headers: { Authorization: `Bearer ${token}` } }); setNotifications(res.data);} catch(e){} finally { setShowNotifications(false); setShowProfileDropdown(false); } }}>
                           <div className="notif-title">{n.title}</div>
                           <div className="notif-message">{n.message}</div>
                           <div className="notif-time">{new Date(n.createdAt).toLocaleString()}</div>

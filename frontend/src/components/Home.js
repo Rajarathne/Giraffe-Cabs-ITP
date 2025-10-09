@@ -408,7 +408,7 @@ const Home = () => {
                 <div className="notif-dropdown">
                   <div className="notif-header">
                     <span>Notifications</span>
-                    <button className="mark-read" onClick={async ()=>{ try { const token = localStorage.getItem('authToken'); await axios.put('/api/notifications/read-all',{}, { headers: { Authorization: `Bearer ${token}` } }); await loadNotifications(); } catch (e) { console.error('Mark all read failed', e); } }}>
+                    <button className="mark-read" onClick={async ()=>{ try { const token = localStorage.getItem('authToken'); await axios.put('/api/notifications/read-all',{}, { headers: { Authorization: `Bearer ${token}` } }); setNotifications({ unreadCount: 0, items: [] }); } catch (e) { console.error('Mark all read failed', e); } finally { setShowNotifications(false); setShowProfileDropdown(false); } }}>
                       Mark all read
                     </button>
                   </div>
@@ -417,7 +417,7 @@ const Home = () => {
                       <div className="notif-empty">No notifications</div>
                     ) : (
                       (notifications.items || []).map(n => (
-                        <div key={n._id} className={`notif-item ${n.isRead ? '' : 'unread'}`} onClick={async ()=>{ try { const token = localStorage.getItem('authToken'); await axios.put(`/api/notifications/${n._id}/read`,{}, { headers: { Authorization: `Bearer ${token}` } }); await loadNotifications(); } catch (e) { console.error('Mark read failed', e); } }}>
+                        <div key={n._id} className={`notif-item ${n.isRead ? '' : 'unread'}`} onClick={async ()=>{ try { const token = localStorage.getItem('authToken'); await axios.put(`/api/notifications/${n._id}/read`,{}, { headers: { Authorization: `Bearer ${token}` } }); await loadNotifications(); } catch (e) { console.error('Mark read failed', e); } finally { setShowNotifications(false); setShowProfileDropdown(false); } }}>
                           <div className="notif-title">{n.title}</div>
                           <div className="notif-message">{n.message}</div>
                           <div className="notif-time">{new Date(n.createdAt).toLocaleString()}</div>
