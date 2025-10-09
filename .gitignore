@@ -21,9 +21,9 @@ dist/
 
 # Environment and secrets
 .env
-.env.*
+
 backend/.env
-backend/.env.*
+
 frontend/.env
 frontend/.env.*
 backend/config.local.js
