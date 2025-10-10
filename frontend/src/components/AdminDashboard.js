@@ -1216,47 +1216,7 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* Today's Tour Booking Requests */}
-      {(() => {
-        const todayISO = new Date().toISOString().split('T')[0];
-        const todaysTourBookings = (tourBookings || []).filter(b => {
-          const ds = (b.bookingDate || b.createdAt || '').toString().slice(0,10);
-          return ds === todayISO;
-        });
-        return (
-          <div className="today-tour-bookings" style={{ marginBottom: '1rem' }}>
-            <div className="content-header" style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-              <h2 style={{ margin: 0 }}>Today's Tour Booking Requests</h2>
-              <button className="btn btn-primary" onClick={() => setActiveTab('tour-bookings')}>
-                View All
-              </button>
-            </div>
-            {todaysTourBookings.length === 0 ? (
-              <div className="empty-cell" style={{ background:'#fff', padding:'1rem', borderRadius:'12px', border:'1px solid #e9ecef' }}>
-                No tour booking requests today
-              </div>
-            ) : (
-              <div className="grid" style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:'0.75rem' }}>
-                {todaysTourBookings.map(b => (
-                  <div key={b._id} className="card" style={{ background:'#fff', border:'1px solid #e9ecef', borderRadius:'12px', padding:'0.9rem', cursor:'pointer' }}
-                       onClick={() => { setSelectedTourBooking(b); setShowTourBookingModal(true); }}>
-                    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.35rem' }}>
-                      <strong style={{ color:'#1E93AB' }}>{b.tourPackage?.packageName || 'Package'}</strong>
-                      <span className={`status-badge ${('status-' + (b.status||'pending')).toLowerCase()}`}>{b.status || 'pending'}</span>
-                    </div>
-                    <div style={{ fontSize:'0.9rem', color:'#444' }}>
-                      <div>{b.tourPackage?.destination || '-'}</div>
-                      <div>{(b.bookingDate || b.createdAt || '').toString().slice(0,10)} {(b.bookingTime || '')}</div>
-                      <div>Customer: {b.contactPerson?.name || '-'}</div>
-                      <div>Passengers: {b.numPassengers || b.passengers || '-'}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      })()}
+      {/* Tour Booking Reminders grid removed per request */}
 
       <DashboardStats 
         stats={stats}
