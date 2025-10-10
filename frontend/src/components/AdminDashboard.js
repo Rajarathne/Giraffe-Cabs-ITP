@@ -227,28 +227,28 @@ const AdminDashboard = () => {
   };
 
   // Vehicle handlers
-  const handleVehicleSubmit = async (e) => {
+  const handleVehicleSubmit = async (e, submitData = null) => {
     e.preventDefault();
-    console.log('Vehicle submit triggered:', { editingVehicle, vehicleData });
+    console.log('Vehicle submit triggered:', { editingVehicle, vehicleData, submitData });
     setLoading(true);
     try {
       const token = localStorage.getItem('authToken');
       const headers = { Authorization: `Bearer ${token}` };
 
-      // Include photos in the vehicle data
-      const vehicleDataWithPhotos = {
+      // Use submitData if provided, otherwise use vehicleData
+      const finalVehicleData = submitData || {
         ...vehicleData,
         photos: selectedPhotos
       };
 
       console.log('Submitting vehicle data:', {
-        ...vehicleDataWithPhotos,
-        photosCount: selectedPhotos.length,
-        firstPhotoPreview: selectedPhotos[0] ? selectedPhotos[0].substring(0, 100) + '...' : 'No photos'
+        ...finalVehicleData,
+        photosCount: finalVehicleData.photos ? finalVehicleData.photos.length : 0,
+        firstPhotoPreview: finalVehicleData.photos && finalVehicleData.photos[0] ? finalVehicleData.photos[0].substring(0, 100) + '...' : 'No photos'
       });
       
       if (editingVehicle) {
-        const response = await axios.put(`/api/vehicles/${editingVehicle._id}`, vehicleDataWithPhotos, { 
+        const response = await axios.put(`/api/vehicles/${editingVehicle._id}`, finalVehicleData, { 
           headers: {
             ...headers,
             'Content-Type': 'application/json'
@@ -257,7 +257,7 @@ const AdminDashboard = () => {
         console.log('Vehicle update response:', response.data);
         alert('Vehicle updated successfully!');
       } else {
-        const response = await axios.post('/api/vehicles', vehicleDataWithPhotos, { 
+        const response = await axios.post('/api/vehicles', finalVehicleData, { 
           headers: {
             ...headers,
             'Content-Type': 'application/json'
@@ -566,17 +566,30 @@ const AdminDashboard = () => {
 
   // Chart data functions
   const getMonthlyRegistrationChartData = () => {
-    // Calculate vehicle registrations by month
+    // Calculate vehicle registrations by month for 2025
     const monthlyData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; // 12 months
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     
+    console.log('Generating monthly registration chart data:', { vehiclesCount: vehicles?.length });
+    
     if (vehicles && Array.isArray(vehicles)) {
       vehicles.forEach(vehicle => {
-        const createdAt = new Date(vehicle.createdAt);
-        const month = createdAt.getMonth();
-        monthlyData[month]++;
+        // Use registrationDate field from Vehicle model
+        const registrationDate = vehicle.registrationDate || vehicle.createdAt;
+        if (registrationDate) {
+          const date = new Date(registrationDate);
+          const year = date.getFullYear();
+          const month = date.getMonth();
+          
+          // Only count registrations from 2025
+          if (year === 2025) {
+            monthlyData[month]++;
+          }
+        }
       });
     }
+
+    console.log('Monthly registration data:', monthlyData);
 
     const primaryColor = theme === 'dark' ? '#60a5fa' : '#1E93AB';
     const backgroundColor = theme === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(30, 147, 171, 0.1)';
@@ -584,11 +597,12 @@ const AdminDashboard = () => {
     return {
       labels: monthNames,
       datasets: [{
-        label: 'Vehicle Registrations',
+        label: 'Vehicle Registrations (2025)',
         data: monthlyData,
         borderColor: primaryColor,
         backgroundColor: backgroundColor,
-        tension: 0.4
+        tension: 0.4,
+        fill: true
       }]
     };
   };

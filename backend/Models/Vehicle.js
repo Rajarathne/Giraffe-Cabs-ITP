@@ -45,38 +45,29 @@ const vehicleSchema = new mongoose.Schema({
     required: true,
     enum: ['manual', 'automatic']
   },
-  // Legacy pricing fields (for backward compatibility)
+  // Pricing fields
   dailyRate: {
     type: Number,
-    required: true
+    required: true,
+    min: 0
   },
   monthlyRate: {
     type: Number,
-    required: true
+    required: true,
+    min: 0
   },
-  // Enhanced pricing structure
-  pricing: {
-    weddingRate: {
-      type: Number,
-      default: 50000,
-      required: function() { return this.rideTypes && this.rideTypes.includes('wedding'); }
-    },
-    dailyRate: {
-      type: Number,
-      required: true
-    },
-    monthlyRate: {
-      type: Number,
-      required: true
-    },
-    airportRate: {
-      type: Number,
-      required: function() { return this.rideTypes && this.rideTypes.includes('airport'); }
-    },
-    cargoRate: {
-      type: Number,
-      required: function() { return this.rideTypes && this.rideTypes.includes('cargo'); }
-    }
+  weddingRate: {
+    type: Number,
+    default: 50000,
+    min: 0
+  },
+  airportRate: {
+    type: Number,
+    min: 0
+  },
+  cargoRate: {
+    type: Number,
+    min: 0
   },
   // Ride types this vehicle can handle
   rideTypes: [{

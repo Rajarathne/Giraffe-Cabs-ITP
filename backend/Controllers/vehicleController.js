@@ -33,9 +33,10 @@ const getVehicleById = async (req, res) => {
 const createVehicle = async (req, res) => {
   try {
     console.log('Create Vehicle Request:', {
-      body: req.body,
+      bodyKeys: Object.keys(req.body),
+      photosCount: req.body.photos ? req.body.photos.length : 0,
       user: req.user,
-      files: req.files
+      files: req.files ? req.files.length : 0
     });
 
     if (req.user.role !== 'admin') {
@@ -86,25 +87,31 @@ const createVehicle = async (req, res) => {
       // Ensure rideTypes is an array
       rideTypes: Array.isArray(req.body.rideTypes) ? req.body.rideTypes : 
                  req.body.rideTypes ? [req.body.rideTypes] : [],
-      // Keep legacy pricing fields for backward compatibility
-      dailyRate: parseInt(req.body.dailyRate),
-      monthlyRate: parseInt(req.body.monthlyRate),
-      // Also create enhanced pricing object
-      pricing: {
-        weddingRate: req.body.weddingRate ? parseInt(req.body.weddingRate) : 50000,
-        dailyRate: parseInt(req.body.dailyRate),
-        monthlyRate: parseInt(req.body.monthlyRate),
-        airportRate: req.body.airportRate ? parseInt(req.body.airportRate) : null,
-        cargoRate: req.body.cargoRate ? parseInt(req.body.cargoRate) : null
-      }
+      // Parse numeric fields
+      year: parseInt(req.body.year) || 0,
+      capacity: parseInt(req.body.capacity) || 0,
+      dailyRate: parseInt(req.body.dailyRate) || 0,
+      monthlyRate: parseInt(req.body.monthlyRate) || 0,
+      weddingRate: req.body.weddingRate ? parseInt(req.body.weddingRate) : 50000,
+      airportRate: req.body.airportRate ? parseInt(req.body.airportRate) : null,
+      cargoRate: req.body.cargoRate ? parseInt(req.body.cargoRate) : null
     };
 
-    // Remove individual pricing fields that are now in pricing object
-    delete vehicleData.weddingRate;
-    delete vehicleData.airportRate;
-    delete vehicleData.cargoRate;
-
-    console.log('Creating vehicle with data:', vehicleData);
+    console.log('Creating vehicle with data:', JSON.stringify(vehicleData, null, 2));
+    
+    // Validate required fields before creating
+    const requiredFields = ['vehicleNumber', 'vehicleType', 'brand', 'model', 'year', 'color', 'capacity', 'fuelType', 'transmission', 'dailyRate', 'monthlyRate'];
+    const missingFields = requiredFields.filter(field => !vehicleData[field] && vehicleData[field] !== 0);
+    
+    if (missingFields.length > 0) {
+      console.log('Missing required fields:', missingFields);
+      return res.status(400).json({ 
+        message: 'Missing required fields', 
+        missingFields: missingFields 
+      });
+    }
+    
+    console.log('All validations passed, creating vehicle...');
     const vehicle = new Vehicle(vehicleData);
     const savedVehicle = await vehicle.save();
     console.log('Vehicle created successfully:', savedVehicle._id);
@@ -187,28 +194,20 @@ const updateVehicle = async (req, res) => {
     // Prepare update data
     const updateData = {
       ...req.body,
-      // Keep legacy pricing fields
+      // Parse numeric fields
+      year: req.body.year ? parseInt(req.body.year) : vehicle.year,
+      capacity: req.body.capacity ? parseInt(req.body.capacity) : vehicle.capacity,
       dailyRate: req.body.dailyRate ? parseInt(req.body.dailyRate) : vehicle.dailyRate,
       monthlyRate: req.body.monthlyRate ? parseInt(req.body.monthlyRate) : vehicle.monthlyRate,
-      // Update pricing object
-      pricing: {
-        weddingRate: req.body.weddingRate ? parseInt(req.body.weddingRate) : (vehicle.pricing?.weddingRate || 50000),
-        dailyRate: req.body.dailyRate ? parseInt(req.body.dailyRate) : vehicle.dailyRate,
-        monthlyRate: req.body.monthlyRate ? parseInt(req.body.monthlyRate) : vehicle.monthlyRate,
-        airportRate: req.body.airportRate ? parseInt(req.body.airportRate) : vehicle.pricing?.airportRate,
-        cargoRate: req.body.cargoRate ? parseInt(req.body.cargoRate) : vehicle.pricing?.cargoRate
-      },
+      weddingRate: req.body.weddingRate ? parseInt(req.body.weddingRate) : (vehicle.weddingRate || 50000),
+      airportRate: req.body.airportRate ? parseInt(req.body.airportRate) : vehicle.airportRate,
+      cargoRate: req.body.cargoRate ? parseInt(req.body.cargoRate) : vehicle.cargoRate,
       // Handle ride types
       rideTypes: Array.isArray(req.body.rideTypes) ? req.body.rideTypes : 
                  req.body.rideTypes ? [req.body.rideTypes] : vehicle.rideTypes || [],
       // Handle photos - merge with existing if no new photos uploaded
       photos: photos.length > 0 ? photos : (vehicle.photos || [])
     };
-
-    // Remove individual pricing fields
-    delete updateData.weddingRate;
-    delete updateData.airportRate;
-    delete updateData.cargoRate;
 
     // Update vehicle
     Object.assign(vehicle, updateData);

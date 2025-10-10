@@ -8,13 +8,24 @@ import 'react-toastify/dist/ReactToastify.css';
 import './Payment.css';
 
 // Initialize Stripe
-const stripePromise = loadStripe('pk_test_51S8bzS4wZaTWdecpBdOxfgUye7PNbwc2k9tFWO5A2lqWZ6rgBkv4fG4FYBKL3wfOSuQe9ki6ANNbExYyUXyR6mFU00wfxWw7rB');
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || 'pk_test_51S8bzS4wZaTWdecpBdOxfgUye7PNbwc2k9tFWO5A2lqWZ6rgBkv4fG4FYBKL3wfOSuQe9ki6ANNbExYyUXyR6mFU00wfxWw7rB');
 
 const PaymentForm = ({ bookingData, amount, onPaymentSuccess, updateBookingPaymentMethod }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
   const [clientSecret, setClientSecret] = useState('');
+  const [stripeError, setStripeError] = useState(null);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('PaymentForm Debug:', {
+      stripe: !!stripe,
+      elements: !!elements,
+      clientSecret: !!clientSecret,
+      amount: amount
+    });
+  }, [stripe, elements, clientSecret, amount]);
 
   const createPaymentIntent = useCallback(async () => {
     try {
@@ -118,13 +129,22 @@ const PaymentForm = ({ bookingData, amount, onPaymentSuccess, updateBookingPayme
       base: {
         fontSize: '16px',
         color: '#424770',
+        fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
         '::placeholder': {
           color: '#aab7c4',
         },
         padding: '12px',
+        backgroundColor: '#ffffff',
+        border: '1px solid #e0e0e0',
+        borderRadius: '4px',
       },
       invalid: {
         color: '#9e2146',
+        borderColor: '#e74c3c',
+      },
+      complete: {
+        color: '#28a745',
+        borderColor: '#28a745',
       },
     },
     hidePostalCode: true,
@@ -135,7 +155,29 @@ const PaymentForm = ({ bookingData, amount, onPaymentSuccess, updateBookingPayme
       <div className="payment-section">
         <h3>💳 Payment Details</h3>
         <div className="card-element-container">
-          <CardElement options={cardElementOptions} />
+          {stripe && elements ? (
+            <CardElement 
+              options={cardElementOptions}
+              onChange={(event) => {
+                if (event.error) {
+                  setStripeError(event.error.message);
+                } else {
+                  setStripeError(null);
+                }
+              }}
+            />
+          ) : (
+            <div className="stripe-loading">
+              <p>Loading payment form...</p>
+            </div>
+          )}
+          {stripeError && (
+            <div className="stripe-error">
+              <p style={{ color: '#e74c3c', fontSize: '0.9rem', marginTop: '10px' }}>
+                {stripeError}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

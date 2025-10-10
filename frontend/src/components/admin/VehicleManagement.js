@@ -58,6 +58,9 @@ const VehicleManagement = ({
       return 'Year is required';
     }
     const year = parseInt(value);
+    if (isNaN(year)) {
+      return 'Year must be a valid number';
+    }
     const currentYear = new Date().getFullYear();
     if (year < 1900) {
       return 'Year must be after 1900';
@@ -73,6 +76,9 @@ const VehicleManagement = ({
       return 'Capacity is required';
     }
     const capacity = parseInt(value);
+    if (isNaN(capacity)) {
+      return 'Capacity must be a valid number';
+    }
     if (capacity < 1) {
       return 'Capacity must be at least 1';
     }
@@ -87,6 +93,9 @@ const VehicleManagement = ({
       return `${fieldName} is required`;
     }
     const rate = parseInt(value);
+    if (isNaN(rate)) {
+      return `${fieldName} must be a valid number`;
+    }
     if (rate < 0) {
       return `${fieldName} cannot be negative`;
     }
@@ -110,14 +119,12 @@ const VehicleManagement = ({
   };
 
   const validatePhotos = useCallback((photos) => {
-    if (!editingVehicle && (!photos || photos.length === 0)) {
-      return 'At least one vehicle photo is required';
-    }
+    // Photos are now optional - no validation required
     if (photos && photos.length > 5) {
       return 'Maximum 5 photos allowed';
     }
     return '';
-  }, [editingVehicle]);
+  }, []);
 
   // Validate individual field
   const validateField = useCallback((fieldName, value) => {
@@ -191,7 +198,7 @@ const VehicleManagement = ({
       }
     }
 
-    // Validate photos
+    // Validate photos (optional)
     const photoError = validatePhotos(selectedPhotos);
     if (photoError) {
       errors.photos = photoError;
@@ -240,7 +247,22 @@ const VehicleManagement = ({
     
     if (isValid) {
       console.log('Calling onVehicleSubmit');
-      onVehicleSubmit(e);
+      // Prepare data for submission
+      const submitData = {
+        ...vehicleData,
+        year: parseInt(vehicleData.year) || 0,
+        capacity: parseInt(vehicleData.capacity) || 0,
+        dailyRate: parseInt(vehicleData.dailyRate) || 0,
+        monthlyRate: parseInt(vehicleData.monthlyRate) || 0,
+        weddingRate: vehicleData.weddingRate ? parseInt(vehicleData.weddingRate) : 50000,
+        airportRate: vehicleData.airportRate ? parseInt(vehicleData.airportRate) : null,
+        cargoRate: vehicleData.cargoRate ? parseInt(vehicleData.cargoRate) : null,
+        photos: selectedPhotos,
+        rideTypes: vehicleData.rideTypes || []
+      };
+      
+      console.log('Submitting vehicle data:', submitData);
+      onVehicleSubmit(e, submitData);
     } else {
       console.log('Form validation failed:', validationErrors);
     }
@@ -744,7 +766,7 @@ const VehicleManagement = ({
                     type="number"
                     id="year"
                     value={vehicleData.year}
-                    onChange={(e) => handleFieldChange('year', parseInt(e.target.value) || '')}
+                    onChange={(e) => handleFieldChange('year', e.target.value)}
                     onBlur={() => setTouchedFields(prev => ({ ...prev, year: true }))}
                     placeholder="e.g., 2023"
                     min="1900"
@@ -781,7 +803,7 @@ const VehicleManagement = ({
                     type="number"
                     id="capacity"
                     value={vehicleData.capacity}
-                    onChange={(e) => handleFieldChange('capacity', parseInt(e.target.value) || '')}
+                    onChange={(e) => handleFieldChange('capacity', e.target.value)}
                     onBlur={() => setTouchedFields(prev => ({ ...prev, capacity: true }))}
                     placeholder="e.g., 4"
                     min="1"
@@ -840,7 +862,7 @@ const VehicleManagement = ({
                     type="number"
                     id="dailyRate"
                     value={vehicleData.dailyRate}
-                    onChange={(e) => handleFieldChange('dailyRate', parseInt(e.target.value) || '')}
+                    onChange={(e) => handleFieldChange('dailyRate', e.target.value)}
                     onBlur={() => setTouchedFields(prev => ({ ...prev, dailyRate: true }))}
                     placeholder="e.g., 5000"
                     min="0"
@@ -858,7 +880,7 @@ const VehicleManagement = ({
                     type="number"
                     id="monthlyRate"
                     value={vehicleData.monthlyRate}
-                    onChange={(e) => handleFieldChange('monthlyRate', parseInt(e.target.value) || '')}
+                    onChange={(e) => handleFieldChange('monthlyRate', e.target.value)}
                     onBlur={() => setTouchedFields(prev => ({ ...prev, monthlyRate: true }))}
                     placeholder="e.g., 120000"
                     min="0"
@@ -879,7 +901,7 @@ const VehicleManagement = ({
                     type="number"
                     id="weddingRate"
                     value={vehicleData.weddingRate}
-                    onChange={(e) => handleFieldChange('weddingRate', parseInt(e.target.value) || '')}
+                    onChange={(e) => handleFieldChange('weddingRate', e.target.value)}
                     onBlur={() => setTouchedFields(prev => ({ ...prev, weddingRate: true }))}
                     placeholder="e.g., 50000"
                     min="0"
@@ -896,7 +918,7 @@ const VehicleManagement = ({
                     type="number"
                     id="airportRate"
                     value={vehicleData.airportRate}
-                    onChange={(e) => handleFieldChange('airportRate', parseInt(e.target.value) || '')}
+                    onChange={(e) => handleFieldChange('airportRate', e.target.value)}
                     onBlur={() => setTouchedFields(prev => ({ ...prev, airportRate: true }))}
                     placeholder="e.g., 150"
                     min="0"
@@ -913,7 +935,7 @@ const VehicleManagement = ({
                     type="number"
                     id="cargoRate"
                     value={vehicleData.cargoRate}
-                    onChange={(e) => handleFieldChange('cargoRate', parseInt(e.target.value) || '')}
+                    onChange={(e) => handleFieldChange('cargoRate', e.target.value)}
                     onBlur={() => setTouchedFields(prev => ({ ...prev, cargoRate: true }))}
                     placeholder="e.g., 200"
                     min="0"
@@ -948,7 +970,7 @@ const VehicleManagement = ({
 
               {/* Vehicle Picture Upload */}
               <div className="form-group">
-                <label htmlFor="vehiclePicture">Vehicle Picture {!editingVehicle ? '*' : ''}</label>
+                <label htmlFor="vehiclePicture">Vehicle Picture</label>
                 <div className="file-upload-container">
                   <input
                     type="file"
@@ -987,13 +1009,42 @@ const VehicleManagement = ({
                           const base64Data = event.target.result;
                           console.log('File read successfully, base64 length:', base64Data.length);
                           
-                          if (editingVehicle) {
-                            // When editing, add to existing photos or replace if none
-                            setSelectedPhotos(prev => prev.length > 0 ? [...prev, base64Data] : [base64Data]);
-                          } else {
-                            // When creating new, replace existing
-                            setSelectedPhotos([base64Data]);
-                          }
+                          // Compress image to reduce payload size
+                          const img = new Image();
+                          img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            
+                            // Calculate new dimensions (max 800px width/height)
+                            let { width, height } = img;
+                            const maxSize = 800;
+                            if (width > maxSize || height > maxSize) {
+                              if (width > height) {
+                                height = (height * maxSize) / width;
+                                width = maxSize;
+                              } else {
+                                width = (width * maxSize) / height;
+                                height = maxSize;
+                              }
+                            }
+                            
+                            canvas.width = width;
+                            canvas.height = height;
+                            
+                            // Draw and compress
+                            ctx.drawImage(img, 0, 0, width, height);
+                            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+                            console.log('Compressed base64 length:', compressedBase64.length);
+                            
+                            if (editingVehicle) {
+                              // When editing, add to existing photos or replace if none
+                              setSelectedPhotos(prev => prev.length > 0 ? [...prev, compressedBase64] : [compressedBase64]);
+                            } else {
+                              // When creating new, replace existing
+                              setSelectedPhotos([compressedBase64]);
+                            }
+                          };
+                          img.src = base64Data;
                         };
                         reader.onerror = (error) => {
                           console.error('Error reading file:', error);
@@ -1006,11 +1057,11 @@ const VehicleManagement = ({
                       }
                     }}
                     className={`file-input ${getFieldValidationClass('photos')}`}
-                    required={!editingVehicle}
+                    required={false}
                   />
                   <label htmlFor="vehiclePicture" className="file-upload-label">
                     <i className="fas fa-cloud-upload-alt"></i>
-                    <span>{editingVehicle ? 'Add Another Picture' : 'Choose Vehicle Picture'} (Max 5MB)</span>
+                    <span>{editingVehicle ? 'Add Another Picture' : 'Choose Vehicle Picture (Optional)'} (Max 5MB)</span>
                   </label>
                   {selectedPhotos.length > 0 && (
                     <div className="photos-preview">

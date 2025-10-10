@@ -190,6 +190,40 @@
   border-radius: 8px;
   border: 1px solid #e0e0e0;
   margin-bottom: 20px;
+  min-height: 50px;
+  position: relative;
+}
+
+/* Ensure Stripe Elements are visible */
+.StripeElement {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  width: 100% !important;
+}
+
+.StripeElement--focus {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 1px #667eea !important;
+}
+
+.StripeElement--invalid {
+  border-color: #e74c3c !important;
+  box-shadow: 0 0 0 1px #e74c3c !important;
+}
+
+.stripe-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+}
+
+.stripe-error {
+  margin-top: 10px;
 }
 
 .payment-info {

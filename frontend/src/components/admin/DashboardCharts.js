@@ -12,13 +12,27 @@ const DashboardCharts = ({
   chartOptions,
   doughnutOptions
 }) => {
+  // Debug logging
+  console.log('DashboardCharts rendered with:', {
+    chartData,
+    chartOptions,
+    doughnutOptions,
+    hasRegistrationData: !!getMonthlyRegistrationChartData
+  });
+
   return (
     <div className="charts-section">
       <div className="chart-container">
         <div className="chart-card">
-          <h3>Vehicle Registration Trends (2024)</h3>
+          <h3>Vehicle Registration Trends (2025)</h3>
           <div className="chart-wrapper">
-            <Line data={getMonthlyRegistrationChartData()} options={chartOptions} />
+            {getMonthlyRegistrationChartData ? (
+              <Line data={getMonthlyRegistrationChartData()} options={chartOptions} />
+            ) : (
+              <div style={{ color: '#666', textAlign: 'center' }}>
+                No chart data available
+              </div>
+            )}
           </div>
         </div>
       </div>

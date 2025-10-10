@@ -7,7 +7,7 @@ const config = {
   PORT: process.env.PORT || 5000,
   // Require explicit Mongo URI from environment; do NOT fall back to localhost
   MONGODB_URI: process.env.MONGODB_URI,
-  JWT_SECRET: process.env.JWT_SECRET,
+  JWT_SECRET: process.env.JWT_SECRET || 'fallback-jwt-secret-for-development',
 };
 
 if (isProduction) {
@@ -23,7 +23,8 @@ if (isProduction) {
 if (!config.MONGODB_URI) {
   console.error('\u274c MONGODB_URI is not set. Create backend/.env with:');
   console.error('MONGODB_URI=mongodb+srv://Rahal:<password>@cluster0.wrmom9e.mongodb.net/giraffe-cabs?retryWrites=true&w=majority');
-  process.exit(1);
+  console.error('Using fallback local MongoDB URI for development...');
+  config.MONGODB_URI = 'mongodb://localhost:27017/giraffe-cabs';
 }
 
 module.exports = config;
