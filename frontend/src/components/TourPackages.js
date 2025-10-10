@@ -459,7 +459,13 @@ const TourPackages = () => {
                   id="numberOfPassengers"
                   name="numberOfPassengers"
                   value={bookingData.numberOfPassengers}
-                  onChange={(e) => updatePassengerCount(parseInt(e.target.value))}
+                  onChange={(e) => {
+                    const raw = parseInt(e.target.value || '0');
+                    const min = Math.max(1, selectedPackage.minPassengers || 1);
+                    const max = selectedPackage.maxPassengers || 20;
+                    const clamped = Math.max(min, Math.min(max, raw));
+                    updatePassengerCount(clamped);
+                  }}
                   min={selectedPackage.minPassengers}
                   max={selectedPackage.maxPassengers}
                   required

@@ -59,6 +59,12 @@ const getBookingById = async (req, res) => {
 // Create New Booking
 const createBooking = async (req, res) => {
   try {
+    // Validate passengers >= 1
+    const passengersNum = Number(req.body?.passengers);
+    if (!Number.isFinite(passengersNum) || passengersNum < 1) {
+      return res.status(400).json({ message: 'Passengers must be at least 1' });
+    }
+
     const bookingData = {
       ...req.body,
       user: req.user._id,
@@ -213,6 +219,14 @@ const updateUserBooking = async (req, res) => {
     const allowedUpdates = ['pickupLocation', 'dropoffLocation', 'pickupDate', 'pickupTime', 'passengers', 'additionalNotes', 'paymentStatus', 'paymentMethod'];
     const updates = {};
     
+  // Validate passengers if provided
+  if (req.body.hasOwnProperty('passengers')) {
+    const passengersNum = Number(req.body.passengers);
+    if (!Number.isFinite(passengersNum) || passengersNum < 1) {
+      return res.status(400).json({ message: 'Passengers must be at least 1' });
+    }
+  }
+
     allowedUpdates.forEach(field => {
       if (req.body[field] !== undefined) {
         updates[field] = req.body[field];
@@ -307,6 +321,13 @@ const updateBookingByAdmin = async (req, res) => {
 
     editableFields.forEach((field) => {
       if (req.body[field] !== undefined) {
+      // Validate passengers if admin attempts to set it
+      if (field === 'passengers') {
+        const passengersNum = Number(req.body.passengers);
+        if (!Number.isFinite(passengersNum) || passengersNum < 1) {
+          return res.status(400).json({ message: 'Passengers must be at least 1' });
+        }
+      }
         booking[field] = req.body[field];
       }
     });

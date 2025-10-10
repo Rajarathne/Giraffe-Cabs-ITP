@@ -735,7 +735,10 @@ const Booking = () => {
                         id="passengers"
                         name="passengers"
                         value={bookingData.passengers}
-                        onChange={handleInputChange}
+                        onChange={(e) => {
+                          const value = Math.max(1, Math.min(50, parseInt(e.target.value || '0')));
+                          handleInputChange({ target: { name: 'passengers', value } });
+                        }}
                         min="1"
                         max="50"
                         required

@@ -33,17 +33,34 @@ const createTourPackage = async (req, res) => {
     // Validate non-zero pricing and distance
     const pricePerPerson = Number(req.body?.pricePerPerson);
     const fullDistance = Number(req.body?.fullDistance);
+    const totalPackagePrice = req.body?.totalPackagePrice !== undefined ? Number(req.body.totalPackagePrice) : undefined;
     if (!Number.isFinite(pricePerPerson) || pricePerPerson <= 0) {
       return res.status(400).json({ message: 'Price per person must be greater than 0' });
     }
     if (!Number.isFinite(fullDistance) || fullDistance <= 0) {
       return res.status(400).json({ message: 'Total distance must be greater than 0' });
     }
+    if (totalPackagePrice !== undefined) {
+      if (!Number.isFinite(totalPackagePrice) || totalPackagePrice <= 0) {
+        return res.status(400).json({ message: 'Total package price must be greater than 0' });
+      }
+    }
 
     const packageData = {
       ...req.body,
       createdBy: req.user._id
     };
+    // Validate visit locations: duration must be > 0 if provided
+    if (Array.isArray(packageData.visitLocations)) {
+      for (const loc of packageData.visitLocations) {
+        if (loc && loc.duration !== undefined && loc.duration !== null && String(loc.duration).trim() !== '') {
+          const numeric = parseFloat(String(loc.duration).replace(/[^0-9.]/g, ''));
+          if (!Number.isFinite(numeric) || numeric <= 0) {
+            return res.status(400).json({ message: 'Visit location duration must be greater than 0' });
+          }
+        }
+      }
+    }
     const newPkg = new TourPackage(packageData);
     const savedPkg = await newPkg.save();
 

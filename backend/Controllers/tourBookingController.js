@@ -7,19 +7,25 @@ const createTourBooking = async (req, res) => {
   try {
     const { tourPackageId, bookingDate, numberOfPassengers, passengers, contactPerson, paymentMethod, specialRequests } = req.body;
 
+    // Validate numberOfPassengers >= 1
+    const num = Number(numberOfPassengers);
+    if (!Number.isFinite(num) || num < 1) {
+      return res.status(400).json({ message: 'Number of passengers must be at least 1' });
+    }
+
     const pkg = await TourPackage.findById(tourPackageId);
     if (!pkg) return res.status(404).json({ message: 'Package not found' });
 
     // Calculate base price
-    const basePrice = numberOfPassengers * pkg.pricePerPerson * pkg.tourDays;
+    const basePrice = num * pkg.pricePerPerson * pkg.tourDays;
     const totalPrice = basePrice; // Admin can adjust this later
 
     const newBooking = new TourBooking({
       user: req.user._id,
       tourPackage: tourPackageId,
       bookingDate: new Date(bookingDate),
-      numberOfPassengers,
-      passengers: passengers.slice(0, numberOfPassengers),
+      numberOfPassengers: num,
+      passengers: passengers.slice(0, num),
       contactPerson,
       pricing: {
         basePrice,

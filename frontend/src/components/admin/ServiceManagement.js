@@ -29,8 +29,8 @@ const ServiceManagement = ({
     const today = new Date().toISOString().split('T')[0];
 
     // Required fields
-    if (!data.vehicleId) {
-      errors.vehicleId = 'Vehicle is required';
+    if (!data.vehicle) {
+      errors.vehicle = 'Vehicle is required';
     }
     if (!data.serviceType || data.serviceType.trim() === '') {
       errors.serviceType = 'Service type is required';
@@ -60,8 +60,14 @@ const ServiceManagement = ({
     }
 
     // Validate next service mileage (must be greater than current mileage)
-    if (data.nextServiceMileage && data.mileage && data.nextServiceMileage <= data.mileage) {
-      errors.nextServiceMileage = 'Next service mileage must be greater than current mileage';
+    if (data.nextServiceMileage !== '' && data.nextServiceMileage !== undefined) {
+      const current = parseInt(data.mileage || 0);
+      const next = parseInt(data.nextServiceMileage);
+      if (isNaN(next) || next <= 0) {
+        errors.nextServiceMileage = 'Next service mileage must be greater than 0';
+      } else if (!isNaN(current) && next <= current) {
+        errors.nextServiceMileage = 'Next service mileage must be greater than current mileage';
+      }
     }
 
     // Description length
@@ -548,7 +554,11 @@ const ServiceManagement = ({
                       type="number"
                       id="mileage"
                       value={serviceData.mileage}
-                      onChange={(e) => setServiceData({...serviceData, mileage: parseInt(e.target.value)})}
+                    onChange={(e) => {
+                      const raw = parseInt(e.target.value || '0');
+                      const clamped = Math.max(1, isNaN(raw) ? 1 : raw);
+                      setServiceData({ ...serviceData, mileage: clamped });
+                    }}
                       placeholder="Enter current mileage"
                       min="1"
                       className={validationErrors.mileage ? 'error' : ''}
@@ -564,7 +574,11 @@ const ServiceManagement = ({
                       type="number"
                       id="cost"
                       value={serviceData.cost}
-                      onChange={(e) => setServiceData({...serviceData, cost: parseInt(e.target.value)})}
+                    onChange={(e) => {
+                      const raw = parseInt(e.target.value || '0');
+                      const clamped = Math.max(1, isNaN(raw) ? 1 : raw);
+                      setServiceData({ ...serviceData, cost: clamped });
+                    }}
                       placeholder="Enter service cost"
                       min="1"
                       className={validationErrors.cost ? 'error' : ''}
@@ -629,14 +643,23 @@ const ServiceManagement = ({
                       type="number"
                       id="nextServiceMileage"
                       value={serviceData.nextServiceMileage}
-                      onChange={(e) => setServiceData({...serviceData, nextServiceMileage: parseInt(e.target.value)})}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      const parsed = parseInt(raw, 10);
+                      setServiceData({ ...serviceData, nextServiceMileage: isNaN(parsed) ? '' : parsed });
+                    }}
                       placeholder="Enter next service mileage"
-                      min={serviceData.mileage ? serviceData.mileage + 1 : 1}
+                    min={0}
                       className={validationErrors.nextServiceMileage ? 'error' : ''}
                     />
                     {validationErrors.nextServiceMileage && (
                       <div className="error-message">{validationErrors.nextServiceMileage}</div>
                     )}
+                  {serviceData.mileage && (
+                    <small className="field-hint">
+                      Must be greater than current mileage ({Number(serviceData.mileage).toLocaleString()} km)
+                    </small>
+                  )}
                   </div>
                 </div>
               </div>

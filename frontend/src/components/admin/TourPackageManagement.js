@@ -147,11 +147,13 @@ const TourPackageManagement = ({
       errors.pricePerPerson = 'Price per person cannot exceed LKR 1,000,000';
     }
 
-    // Total Package Price Validation
-    if (data.totalPackagePrice && data.totalPackagePrice < 0) {
-      errors.totalPackagePrice = 'Total package price cannot be negative';
-    } else if (data.totalPackagePrice && data.totalPackagePrice > 10000000) {
-      errors.totalPackagePrice = 'Total package price cannot exceed LKR 10,000,000';
+    // Total Package Price Validation (must be greater than 0 if provided)
+    if (data.totalPackagePrice !== '' && data.totalPackagePrice !== undefined) {
+      if (data.totalPackagePrice <= 0) {
+        errors.totalPackagePrice = 'Total package price must be greater than 0';
+      } else if (data.totalPackagePrice > 10000000) {
+        errors.totalPackagePrice = 'Total package price cannot exceed LKR 10,000,000';
+      }
     }
 
     // Passenger Limits Validation
@@ -281,12 +283,49 @@ const TourPackageManagement = ({
   };
 
   const handleArrayInputChange = (arrayName, index, field, value) => {
+    // For visitLocations.duration, prevent zero by normalizing to at least 1 if numeric
+    let normalizedValue = value;
+    if (arrayName === 'visitLocations' && field === 'duration') {
+      const numeric = parseFloat((value || '').toString().replace(/[^0-9.]/g, ''));
+      if (!isNaN(numeric) && numeric <= 0) {
+        normalizedValue = '1';
+      }
+    }
     setPackageData(prev => ({
       ...prev,
       [arrayName]: prev[arrayName].map((item, i) => 
-        i === index ? { ...item, [field]: value } : item
+        i === index ? { ...item, [field]: normalizedValue } : item
       )
     }));
+  };
+
+  // Helper: clamp numeric fields and keep min/max passengers consistent
+  const handleNumberFieldChange = (name, rawValue, min, max) => {
+    const num = parseFloat(rawValue);
+    const clamped = isNaN(num) ? '' : Math.max(min, max !== undefined ? Math.min(max, num) : num);
+    setPackageData(prev => {
+      const next = { ...prev, [name]: clamped };
+      if (name === 'minPassengers') {
+        const currentMax = parseFloat(prev.maxPassengers);
+        if (!isNaN(currentMax) && clamped !== '' && clamped > currentMax) {
+          next.maxPassengers = clamped;
+        }
+      }
+      if (name === 'maxPassengers') {
+        const currentMin = parseFloat(prev.minPassengers);
+        if (!isNaN(currentMin) && clamped !== '' && clamped < currentMin) {
+          next.minPassengers = clamped;
+        }
+      }
+      return next;
+    });
+    if (validationErrors[name]) {
+      setValidationErrors(prev => {
+        const copy = { ...prev };
+        delete copy[name];
+        return copy;
+      });
+    }
   };
 
   const addArrayItem = (arrayName, defaultItem) => {
@@ -1028,7 +1067,7 @@ const TourPackageManagement = ({
                       id="tourDays"
                       name="tourDays"
                       value={packageData.tourDays}
-                      onChange={handleInputChange}
+                    onChange={(e) => handleNumberFieldChange('tourDays', e.target.value, 1, 30)}
                       min="1"
                       max="30"
                       required
@@ -1045,7 +1084,7 @@ const TourPackageManagement = ({
                       id="fullDistance"
                       name="fullDistance"
                       value={packageData.fullDistance}
-                      onChange={handleInputChange}
+                    onChange={(e) => handleNumberFieldChange('fullDistance', e.target.value, 1, 10000)}
                       min="1"
                       max="10000"
                       step="0.1"
@@ -1070,7 +1109,7 @@ const TourPackageManagement = ({
                       id="pricePerPerson"
                       name="pricePerPerson"
                       value={packageData.pricePerPerson}
-                      onChange={handleInputChange}
+                    onChange={(e) => handleNumberFieldChange('pricePerPerson', e.target.value, 1, 1000000)}
                       min="1"
                       max="1000000"
                       step="0.01"
@@ -1088,8 +1127,8 @@ const TourPackageManagement = ({
                       id="totalPackagePrice"
                       name="totalPackagePrice"
                       value={packageData.totalPackagePrice}
-                      onChange={handleInputChange}
-                      min="0"
+                      onChange={(e) => handleNumberFieldChange('totalPackagePrice', e.target.value, 1, 10000000)}
+                      min="1"
                       max="10000000"
                       step="0.01"
                       className={validationErrors.totalPackagePrice ? 'error' : ''}
@@ -1150,7 +1189,7 @@ const TourPackageManagement = ({
                       id="minPassengers"
                       name="minPassengers"
                       value={packageData.minPassengers}
-                      onChange={handleInputChange}
+                    onChange={(e) => handleNumberFieldChange('minPassengers', e.target.value, 1, 100)}
                       min="1"
                       max="100"
                       required
@@ -1167,7 +1206,7 @@ const TourPackageManagement = ({
                       id="maxPassengers"
                       name="maxPassengers"
                       value={packageData.maxPassengers}
-                      onChange={handleInputChange}
+                    onChange={(e) => handleNumberFieldChange('maxPassengers', e.target.value, 1, 100)}
                       min="1"
                       max="100"
                       required

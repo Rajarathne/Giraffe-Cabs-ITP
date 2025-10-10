@@ -44,6 +44,16 @@ const createServiceRecord = async (req, res) => {
     if (!Number.isFinite(costNum) || costNum <= 0) {
       return res.status(400).json({ message: 'Cost must be greater than 0' });
     }
+    // If nextServiceMileage provided, it must be > current mileage and > 0
+    if (req.body.hasOwnProperty('nextServiceMileage')) {
+      const nextMileageNum = Number(req.body.nextServiceMileage);
+      if (!Number.isFinite(nextMileageNum) || nextMileageNum <= 0) {
+        return res.status(400).json({ message: 'Next service mileage must be greater than 0' });
+      }
+      if (nextMileageNum <= mileageNum) {
+        return res.status(400).json({ message: 'Next service mileage must be greater than current mileage' });
+      }
+    }
 
     // Auto-populate next service date if not provided
     let serviceData = { ...req.body };
@@ -94,6 +104,20 @@ const updateServiceRecord = async (req, res) => {
       const costNum = Number(req.body.cost);
       if (!Number.isFinite(costNum) || costNum <= 0) {
         return res.status(400).json({ message: 'Cost must be greater than 0' });
+      }
+    }
+    // Validate nextServiceMileage if provided
+    if (req.body.hasOwnProperty('nextServiceMileage')) {
+      const nextMileageNum = Number(req.body.nextServiceMileage);
+      if (!Number.isFinite(nextMileageNum) || nextMileageNum <= 0) {
+        return res.status(400).json({ message: 'Next service mileage must be greater than 0' });
+      }
+      // Determine baseline mileage (incoming update or existing)
+      const baselineMileage = req.body.hasOwnProperty('mileage')
+        ? Number(req.body.mileage)
+        : Number(serviceRecord.mileage);
+      if (Number.isFinite(baselineMileage) && nextMileageNum <= baselineMileage) {
+        return res.status(400).json({ message: 'Next service mileage must be greater than current mileage' });
       }
     }
 

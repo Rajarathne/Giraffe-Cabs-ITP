@@ -204,6 +204,121 @@ const FinancialManagement = ({
     }
   };
 
+  // Draw Monthly Income vs Expenses chart without external libraries
+  React.useEffect(() => {
+    try {
+      const canvas = document.getElementById('financialChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Compute last 6 months labels
+      const monthKeys = [];
+      const now = new Date();
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        monthKeys.push(key);
+      }
+
+      // Aggregate income/expense per month from financialEntries
+      const incomeMap = Object.fromEntries(monthKeys.map(k => [k, 0]));
+      const expenseMap = Object.fromEntries(monthKeys.map(k => [k, 0]));
+      (financialEntries || []).forEach(entry => {
+        if (!entry?.date || !entry?.type || typeof entry?.amount !== 'number') return;
+        const d = new Date(entry.date);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        if (!(key in incomeMap)) return; // only last 6 months
+        if (entry.type === 'income') incomeMap[key] += entry.amount;
+        if (entry.type === 'expense') expenseMap[key] += entry.amount;
+      });
+
+      const income = monthKeys.map(k => incomeMap[k]);
+      const expenses = monthKeys.map(k => expenseMap[k]);
+
+      // Prepare canvas
+      const width = canvas.width = canvas.parentElement?.clientWidth || 600;
+      const height = canvas.height = 280;
+      ctx.clearRect(0, 0, width, height);
+
+      // Chart padding and scales
+      const padding = { top: 20, right: 20, bottom: 40, left: 50 };
+      const chartW = width - padding.left - padding.right;
+      const chartH = height - padding.top - padding.bottom;
+      const maxValue = Math.max(1, ...income, ...expenses);
+      const yTicks = 4;
+
+      // Axes
+      ctx.strokeStyle = '#ddd';
+      ctx.fillStyle = '#666';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padding.left, padding.top);
+      ctx.lineTo(padding.left, padding.top + chartH);
+      ctx.lineTo(padding.left + chartW, padding.top + chartH);
+      ctx.stroke();
+
+      // Y grid/ticks
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      ctx.font = '12px sans-serif';
+      for (let t = 0; t <= yTicks; t++) {
+        const yVal = (maxValue / yTicks) * t;
+        const y = padding.top + chartH - (yVal / maxValue) * chartH;
+        ctx.strokeStyle = '#f2f2f2';
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(padding.left + chartW, y);
+        ctx.stroke();
+        ctx.fillStyle = '#888';
+        ctx.fillText(`LKR ${Math.round(yVal).toLocaleString()}`, padding.left - 6, y);
+      }
+
+      // Bars (grouped)
+      const groups = monthKeys.length;
+      const groupWidth = chartW / groups;
+      const barGap = 6;
+      const barWidth = (groupWidth - barGap * 3) / 2; // two bars per group
+
+      monthKeys.forEach((key, i) => {
+        const gx = padding.left + i * groupWidth;
+        // Income bar
+        const incomeH = (income[i] / maxValue) * chartH;
+        ctx.fillStyle = '#28a745';
+        ctx.fillRect(gx + barGap, padding.top + chartH - incomeH, barWidth, incomeH);
+        // Expense bar
+        const expenseH = (expenses[i] / maxValue) * chartH;
+        ctx.fillStyle = '#dc3545';
+        ctx.fillRect(gx + barGap * 2 + barWidth, padding.top + chartH - expenseH, barWidth, expenseH);
+
+        // X labels
+        ctx.fillStyle = '#555';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        const [year, month] = key.split('-');
+        ctx.fillText(`${month}/${year.slice(-2)}`, gx + groupWidth / 2, padding.top + chartH + 8);
+      });
+
+      // Legend
+      const legendY = padding.top - 10;
+      let legendX = padding.left + 10;
+      ctx.fillStyle = '#28a745';
+      ctx.fillRect(legendX, legendY, 12, 12);
+      ctx.fillStyle = '#333';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Income', legendX + 18, legendY + 6);
+      legendX += 90;
+      ctx.fillStyle = '#dc3545';
+      ctx.fillRect(legendX, legendY, 12, 12);
+      ctx.fillStyle = '#333';
+      ctx.fillText('Expenses', legendX + 18, legendY + 6);
+    } catch (err) {
+      // Fail silently to avoid breaking UI
+      console.warn('Chart render failed:', err);
+    }
+  }, [financialEntries]);
+
   return (
     <div className="financial-management">
       <div className="content-header">
@@ -571,10 +686,20 @@ const FinancialManagement = ({
                   type="number"
                   id="amount"
                   value={financialFormData.amount}
-                  onChange={(e) => setFinancialFormData({...financialFormData, amount: e.target.value})}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    const num = parseFloat(raw);
+                    // Clamp to integers >= 1 (no zero, no negative)
+                    if (isNaN(num)) {
+                      setFinancialFormData({ ...financialFormData, amount: '' });
+                    } else {
+                      const clamped = Math.max(1, Math.floor(num));
+                      setFinancialFormData({ ...financialFormData, amount: clamped.toString() });
+                    }
+                  }}
                   placeholder="Enter amount..."
-                  min="0.01"
-                  step="0.01"
+                  min="1"
+                  step="1"
                   className={validationErrors.amount ? 'error' : ''}
                   required
                 />
