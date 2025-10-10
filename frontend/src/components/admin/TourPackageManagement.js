@@ -183,6 +183,17 @@ const TourPackageManagement = ({
         } else if (location.location.trim().length > 50) {
           errors[`visitLocations_${index}_location`] = 'Location name cannot exceed 50 characters';
         }
+
+        // Duration validation: must be provided and > 0 (accepts values like "2", "2h", "2 hours")
+        const durationRaw = (location.duration || '').toString().trim();
+        if (!durationRaw) {
+          errors[`visitLocations_${index}_duration`] = 'Visit time is required';
+        } else {
+          const numeric = parseFloat(durationRaw.replace(/[^0-9.]/g, ''));
+          if (isNaN(numeric) || numeric <= 0) {
+            errors[`visitLocations_${index}_duration`] = 'Visit time must be greater than 0';
+          }
+        }
       });
     }
 

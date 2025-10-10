@@ -30,13 +30,15 @@ const FinancialManagement = ({
     const today = new Date().toISOString().split('T')[0];
 
     // Validate amount (must be greater than 0)
-    if (!data.amount || parseFloat(data.amount) <= 0) {
+    if (!data.amount || isNaN(parseFloat(data.amount)) || parseFloat(data.amount) <= 0) {
       errors.amount = 'Amount must be greater than 0';
     }
 
     // Validate description (required and not empty)
     if (!data.description || data.description.trim() === '') {
       errors.description = 'Description is required';
+    } else if (data.description.length > 200) {
+      errors.description = 'Description cannot exceed 200 characters';
     }
 
     // Validate date (cannot be in the future)
@@ -47,6 +49,16 @@ const FinancialManagement = ({
     // Validate category (required)
     if (!data.category) {
       errors.category = 'Category is required';
+    }
+
+    // Validate type (income or expense)
+    if (!['income', 'expense'].includes(data.type)) {
+      errors.type = 'Entry type is required';
+    }
+
+    // Optional: reference length
+    if (data.reference && data.reference.length > 60) {
+      errors.reference = 'Reference cannot exceed 60 characters';
     }
 
     return errors;
@@ -486,7 +498,24 @@ const FinancialManagement = ({
                 )}
               </div>
 
-              <div className="form-group">
+      <div className="form-group">
+        <label htmlFor="type">Type <span className="required">*</span></label>
+        <select
+          id="type"
+          value={financialFormData.type}
+          onChange={(e) => setFinancialFormData({...financialFormData, type: e.target.value})}
+          className={validationErrors.type ? 'error' : ''}
+          required
+        >
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+        </select>
+        {validationErrors.type && (
+          <div className="error-message">{validationErrors.type}</div>
+        )}
+      </div>
+
+      <div className="form-group">
                 <label htmlFor="category">Category <span className="required">*</span></label>
                 <select
                   id="category"

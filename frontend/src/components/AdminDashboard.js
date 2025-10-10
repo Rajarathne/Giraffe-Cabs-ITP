@@ -77,6 +77,8 @@ const AdminDashboard = () => {
   });
   const [tourPackages, setTourPackages] = useState([]);
   const [tourBookings, setTourBookings] = useState([]);
+  const [selectedTourBooking, setSelectedTourBooking] = useState(null);
+  const [showTourBookingModal, setShowTourBookingModal] = useState(false);
   const [upcomingTomorrow, setUpcomingTomorrow] = useState({ date: '', count: 0, bookings: [] });
   const [todayBookings, setTodayBookings] = useState({ date: '', count: 0, bookings: [] });
   const [showBookingReminders, setShowBookingReminders] = useState(false);
@@ -1214,12 +1216,59 @@ const AdminDashboard = () => {
         </div>
       )}
 
+      {/* Today's Tour Booking Requests */}
+      {(() => {
+        const todayISO = new Date().toISOString().split('T')[0];
+        const todaysTourBookings = (tourBookings || []).filter(b => {
+          const ds = (b.bookingDate || b.createdAt || '').toString().slice(0,10);
+          return ds === todayISO;
+        });
+        return (
+          <div className="today-tour-bookings" style={{ marginBottom: '1rem' }}>
+            <div className="content-header" style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+              <h2 style={{ margin: 0 }}>Today's Tour Booking Requests</h2>
+              <button className="btn btn-primary" onClick={() => setActiveTab('tour-bookings')}>
+                View All
+              </button>
+            </div>
+            {todaysTourBookings.length === 0 ? (
+              <div className="empty-cell" style={{ background:'#fff', padding:'1rem', borderRadius:'12px', border:'1px solid #e9ecef' }}>
+                No tour booking requests today
+              </div>
+            ) : (
+              <div className="grid" style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:'0.75rem' }}>
+                {todaysTourBookings.map(b => (
+                  <div key={b._id} className="card" style={{ background:'#fff', border:'1px solid #e9ecef', borderRadius:'12px', padding:'0.9rem', cursor:'pointer' }}
+                       onClick={() => { setSelectedTourBooking(b); setShowTourBookingModal(true); }}>
+                    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.35rem' }}>
+                      <strong style={{ color:'#1E93AB' }}>{b.tourPackage?.packageName || 'Package'}</strong>
+                      <span className={`status-badge ${('status-' + (b.status||'pending')).toLowerCase()}`}>{b.status || 'pending'}</span>
+                    </div>
+                    <div style={{ fontSize:'0.9rem', color:'#444' }}>
+                      <div>{b.tourPackage?.destination || '-'}</div>
+                      <div>{(b.bookingDate || b.createdAt || '').toString().slice(0,10)} {(b.bookingTime || '')}</div>
+                      <div>Customer: {b.contactPerson?.name || '-'}</div>
+                      <div>Passengers: {b.numPassengers || b.passengers || '-'}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })()}
+
       <DashboardStats 
         stats={stats}
         serviceReminders={serviceReminders}
         onRemindersClick={() => setShowRemindersModal(true)}
         onBookingRemindersClick={() => setShowBookingReminders(true)}
         bookingReminders={{ today: todayBookings.bookings || [], tomorrow: upcomingTomorrow.bookings || [] }}
+        onTourBookingRemindersClick={() => setActiveTab('tour-bookings')}
+        tourBookingReminders={{
+          today: (tourBookings || []).filter(b => (b.bookingDate || b.createdAt || '').toString().slice(0,10) === new Date().toISOString().split('T')[0]),
+          tomorrow: (tourBookings || []).filter(b => (b.bookingDate || b.createdAt || '').toString().slice(0,10) === new Date(Date.now()+86400000).toISOString().split('T')[0])
+        }}
       />
 
       <DashboardCharts 
@@ -1561,6 +1610,54 @@ const AdminDashboard = () => {
         tomorrow={upcomingTomorrow.bookings || []}
         loading={loading}
       />
+
+      {/* Tour Booking quick view modal */}
+      {showTourBookingModal && selectedTourBooking && (
+        <div className="modal-overlay" onClick={() => setShowTourBookingModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Tour Booking Details</h3>
+              <button className="close-btn" onClick={() => setShowTourBookingModal(false)}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            <div className="modal-body">
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem' }}>
+                <div>
+                  <strong>Package</strong>
+                  <div>{selectedTourBooking.tourPackage?.packageName} ({selectedTourBooking.tourPackage?.destination})</div>
+                </div>
+                <div>
+                  <strong>Status</strong>
+                  <div>{selectedTourBooking.status}</div>
+                </div>
+                <div>
+                  <strong>Customer</strong>
+                  <div>{selectedTourBooking.contactPerson?.name}</div>
+                  <div>{selectedTourBooking.contactPerson?.email}</div>
+                  <div>{selectedTourBooking.contactPerson?.phone}</div>
+                </div>
+                <div>
+                  <strong>When</strong>
+                  <div>{(selectedTourBooking.bookingDate || selectedTourBooking.createdAt || '').toString().slice(0,10)} {selectedTourBooking.bookingTime || ''}</div>
+                </div>
+                <div>
+                  <strong>Passengers</strong>
+                  <div>{selectedTourBooking.numPassengers || selectedTourBooking.passengers || '-'}</div>
+                </div>
+                <div>
+                  <strong>Notes</strong>
+                  <div>{selectedTourBooking.adminNotes || '-'}</div>
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={() => setShowTourBookingModal(false)}>Close</button>
+              <button className="btn btn-primary" onClick={() => { setActiveTab('tour-bookings'); setShowTourBookingModal(false); }}>Open in Tour Bookings</button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

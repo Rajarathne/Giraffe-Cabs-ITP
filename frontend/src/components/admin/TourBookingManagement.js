@@ -24,6 +24,8 @@ const TourBookingManagement = ({
   const [dateFilter, setDateFilter] = useState('all');
   const [priceFilter, setPriceFilter] = useState('all');
 
+  // No inline reminders grid on this page – keep original table view only
+
   const handleBookingSelect = (booking) => {
     setSelectedBooking(booking);
     setActionData({

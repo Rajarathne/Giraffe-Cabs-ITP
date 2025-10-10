@@ -1,7 +1,7 @@
 import React from 'react';
 import './DashboardStats.css';
 
-const DashboardStats = ({ stats, serviceReminders, onRemindersClick, onBookingRemindersClick, bookingReminders }) => {
+const DashboardStats = ({ stats, serviceReminders, onRemindersClick, onBookingRemindersClick, bookingReminders, onTourBookingRemindersClick, tourBookingReminders }) => {
   return (
     <div className="stats-grid">
       <div className="stat-card">
@@ -76,6 +76,22 @@ const DashboardStats = ({ stats, serviceReminders, onRemindersClick, onBookingRe
             {(bookingReminders?.today?.length || 0) > 0 && (bookingReminders?.tomorrow?.length || 0) > 0 && ', '}
             {(bookingReminders?.tomorrow?.length || 0) > 0 && `${bookingReminders.tomorrow.length} Tomorrow`}
             {((bookingReminders?.today?.length || 0) + (bookingReminders?.tomorrow?.length || 0)) === 0 && 'No upcoming bookings'}
+          </small>
+        </div>
+      </div>
+
+      <div className="stat-card reminders clickable" onClick={onTourBookingRemindersClick}>
+        <div className="stat-icon">
+          <i className="fas fa-route"></i>
+        </div>
+        <div className="stat-info">
+          <h3>{(tourBookingReminders?.today?.length || 0) + (tourBookingReminders?.tomorrow?.length || 0)}</h3>
+          <p>Tour Booking Reminders</p>
+          <small>
+            {(tourBookingReminders?.today?.length || 0) > 0 && `${tourBookingReminders.today.length} Today`}
+            {(tourBookingReminders?.today?.length || 0) > 0 && (tourBookingReminders?.tomorrow?.length || 0) > 0 && ', '}
+            {(tourBookingReminders?.tomorrow?.length || 0) > 0 && `${tourBookingReminders.tomorrow.length} Tomorrow`}
+            {((tourBookingReminders?.today?.length || 0) + (tourBookingReminders?.tomorrow?.length || 0)) === 0 && 'No upcoming tours'}
           </small>
         </div>
       </div>

@@ -28,18 +28,29 @@ const ServiceManagement = ({
     const errors = {};
     const today = new Date().toISOString().split('T')[0];
 
+    // Required fields
+    if (!data.vehicleId) {
+      errors.vehicleId = 'Vehicle is required';
+    }
+    if (!data.serviceType || data.serviceType.trim() === '') {
+      errors.serviceType = 'Service type is required';
+    }
+    if (!data.serviceProvider || data.serviceProvider.trim() === '') {
+      errors.serviceProvider = 'Service provider is required';
+    }
+
     // Validate service date (cannot be in the future)
     if (data.serviceDate > today) {
       errors.serviceDate = 'Service date cannot be in the future';
     }
 
     // Validate cost (must be greater than 0)
-    if (!data.cost || data.cost <= 0) {
+    if (!data.cost || isNaN(parseFloat(data.cost)) || parseFloat(data.cost) <= 0) {
       errors.cost = 'Cost must be greater than 0';
     }
 
     // Validate mileage (must be greater than 0)
-    if (!data.mileage || data.mileage <= 0) {
+    if (!data.mileage || isNaN(parseInt(data.mileage)) || parseInt(data.mileage) <= 0) {
       errors.mileage = 'Mileage must be greater than 0';
     }
 
@@ -51,6 +62,11 @@ const ServiceManagement = ({
     // Validate next service mileage (must be greater than current mileage)
     if (data.nextServiceMileage && data.mileage && data.nextServiceMileage <= data.mileage) {
       errors.nextServiceMileage = 'Next service mileage must be greater than current mileage';
+    }
+
+    // Description length
+    if (data.description && data.description.length > 300) {
+      errors.description = 'Description cannot exceed 300 characters';
     }
 
     return errors;

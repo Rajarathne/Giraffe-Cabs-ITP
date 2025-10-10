@@ -89,15 +89,15 @@ const VehicleManagement = ({
   };
 
   const validateRate = (value, fieldName) => {
-    if (!value && value !== 0) {
+    if (value === '' || value === undefined || value === null) {
       return `${fieldName} is required`;
     }
     const rate = parseInt(value);
     if (isNaN(rate)) {
       return `${fieldName} must be a valid number`;
     }
-    if (rate < 0) {
-      return `${fieldName} cannot be negative`;
+    if (rate <= 0) {
+      return `${fieldName} must be greater than 0`;
     }
     if (rate > 1000000) {
       return `${fieldName} cannot exceed 1,000,000 LKR`;
@@ -150,7 +150,7 @@ const VehicleManagement = ({
       case 'dailyRate':
         return validateRate(value, 'Daily rate');
       case 'monthlyRate':
-        return value ? validateRate(value, 'Monthly rate') : '';
+        return validateRate(value, 'Monthly rate');
       case 'weddingRate':
         return value ? validateRate(value, 'Wedding rate') : '';
       case 'airportRate':
