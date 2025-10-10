@@ -39,6 +39,12 @@ const createFinancialEntry = async (req, res) => {
       return res.status(403).json({ message: 'Access denied' });
     }
 
+    // Validate amount > 0
+    const amountNum = Number(req.body?.amount);
+    if (!Number.isFinite(amountNum) || amountNum <= 0) {
+      return res.status(400).json({ message: 'Amount must be greater than 0' });
+    }
+
     const financialEntry = new FinancialEntry({
       ...req.body,
       createdBy: req.user._id
@@ -59,6 +65,14 @@ const updateFinancialEntry = async (req, res) => {
   try {
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Access denied' });
+    }
+
+    // Validate amount if provided
+    if (req.body.hasOwnProperty('amount')) {
+      const amountNum = Number(req.body.amount);
+      if (!Number.isFinite(amountNum) || amountNum <= 0) {
+        return res.status(400).json({ message: 'Amount must be greater than 0' });
+      }
     }
 
     const entry = await FinancialEntry.findById(req.params.id);

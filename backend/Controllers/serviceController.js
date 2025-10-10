@@ -35,6 +35,16 @@ const createServiceRecord = async (req, res) => {
       return res.status(403).json({ message: 'Access denied' });
     }
 
+    // Basic numeric validations
+    const mileageNum = Number(req.body?.mileage);
+    const costNum = Number(req.body?.cost);
+    if (!Number.isFinite(mileageNum) || mileageNum <= 0) {
+      return res.status(400).json({ message: 'Mileage must be greater than 0' });
+    }
+    if (!Number.isFinite(costNum) || costNum <= 0) {
+      return res.status(400).json({ message: 'Cost must be greater than 0' });
+    }
+
     // Auto-populate next service date if not provided
     let serviceData = { ...req.body };
     
@@ -71,6 +81,20 @@ const updateServiceRecord = async (req, res) => {
     const serviceRecord = await ServiceRecord.findById(req.params.id);
     if (!serviceRecord) {
       return res.status(404).json({ message: 'Service record not found' });
+    }
+
+    // Validate updates if mileage/cost provided
+    if (req.body.hasOwnProperty('mileage')) {
+      const mileageNum = Number(req.body.mileage);
+      if (!Number.isFinite(mileageNum) || mileageNum <= 0) {
+        return res.status(400).json({ message: 'Mileage must be greater than 0' });
+      }
+    }
+    if (req.body.hasOwnProperty('cost')) {
+      const costNum = Number(req.body.cost);
+      if (!Number.isFinite(costNum) || costNum <= 0) {
+        return res.status(400).json({ message: 'Cost must be greater than 0' });
+      }
     }
 
     Object.assign(serviceRecord, req.body);

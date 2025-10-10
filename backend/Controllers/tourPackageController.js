@@ -30,6 +30,16 @@ const User = require('../Models/User');
 // ✅ Create new tour package
 const createTourPackage = async (req, res) => {
   try {
+    // Validate non-zero pricing and distance
+    const pricePerPerson = Number(req.body?.pricePerPerson);
+    const fullDistance = Number(req.body?.fullDistance);
+    if (!Number.isFinite(pricePerPerson) || pricePerPerson <= 0) {
+      return res.status(400).json({ message: 'Price per person must be greater than 0' });
+    }
+    if (!Number.isFinite(fullDistance) || fullDistance <= 0) {
+      return res.status(400).json({ message: 'Total distance must be greater than 0' });
+    }
+
     const packageData = {
       ...req.body,
       createdBy: req.user._id
