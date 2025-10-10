@@ -229,6 +229,7 @@ const AdminDashboard = () => {
   // Vehicle handlers
   const handleVehicleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Vehicle submit triggered:', { editingVehicle, vehicleData });
     setLoading(true);
     try {
       const token = localStorage.getItem('authToken');
@@ -279,7 +280,15 @@ const AdminDashboard = () => {
       setPhotoCaptions({});
       loadDashboardData();
     } catch (error) {
-      alert(error.response?.data?.message || 'Operation failed');
+      console.error('Vehicle operation error:', error);
+      
+      if (error.response?.data?.errors) {
+        // Handle validation errors
+        const errorMessages = Object.values(error.response.data.errors).join(', ');
+        alert(`Validation failed: ${errorMessages}`);
+      } else {
+        alert(error.response?.data?.message || 'Operation failed');
+      }
     } finally {
       setLoading(false);
     }

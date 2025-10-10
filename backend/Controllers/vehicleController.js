@@ -32,6 +32,12 @@ const getVehicleById = async (req, res) => {
 // Create New Vehicle (Admin only)
 const createVehicle = async (req, res) => {
   try {
+    console.log('Create Vehicle Request:', {
+      body: req.body,
+      user: req.user,
+      files: req.files
+    });
+
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Access denied' });
     }
@@ -98,10 +104,33 @@ const createVehicle = async (req, res) => {
     delete vehicleData.airportRate;
     delete vehicleData.cargoRate;
 
+    console.log('Creating vehicle with data:', vehicleData);
     const vehicle = new Vehicle(vehicleData);
     const savedVehicle = await vehicle.save();
+    console.log('Vehicle created successfully:', savedVehicle._id);
     res.status(201).json(savedVehicle);
   } catch (error) {
+    console.error('Vehicle creation error:', error);
+    
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      const validationErrors = {};
+      Object.keys(error.errors).forEach(key => {
+        validationErrors[key] = error.errors[key].message;
+      });
+      return res.status(400).json({ 
+        message: 'Validation failed', 
+        errors: validationErrors 
+      });
+    }
+    
+    // Handle duplicate key error
+    if (error.code === 11000) {
+      return res.status(400).json({ 
+        message: 'Vehicle number already exists' 
+      });
+    }
+    
     res.status(500).json({ message: error.message });
   }
 };

@@ -162,7 +162,7 @@ const VehicleManagement = ({
     const errors = {};
     const fieldsToValidate = [
       'vehicleNumber', 'vehicleType', 'brand', 'model', 'year', 
-      'color', 'capacity', 'fuelType', 'transmission', 'dailyRate'
+      'color', 'capacity', 'fuelType', 'transmission', 'dailyRate', 'monthlyRate'
     ];
 
     fieldsToValidate.forEach(field => {
@@ -173,7 +173,7 @@ const VehicleManagement = ({
     });
 
     // Validate optional fields if they have values
-    const optionalFields = ['monthlyRate', 'weddingRate', 'airportRate', 'cargoRate'];
+    const optionalFields = ['weddingRate', 'airportRate', 'cargoRate'];
     optionalFields.forEach(field => {
       if (vehicleData[field]) {
         const error = validateField(field, vehicleData[field]);
@@ -220,6 +220,7 @@ const VehicleManagement = ({
   // Handle form submission with validation
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    console.log('Form submit triggered in VehicleManagement');
     
     // Mark all fields as touched
     const allFields = [
@@ -234,7 +235,11 @@ const VehicleManagement = ({
     setTouchedFields(touched);
 
     // Validate form
-    if (validateForm()) {
+    const isValid = validateForm();
+    console.log('Form validation result:', { isValid, validationErrors, vehicleData });
+    
+    if (isValid) {
+      console.log('Calling onVehicleSubmit');
       onVehicleSubmit(e);
     } else {
       console.log('Form validation failed:', validationErrors);
@@ -848,7 +853,7 @@ const VehicleManagement = ({
                   )}
                 </div>
                 <div className="form-group">
-                  <label htmlFor="monthlyRate">Monthly Rate (LKR)</label>
+                  <label htmlFor="monthlyRate">Monthly Rate (LKR) *</label>
                   <input
                     type="number"
                     id="monthlyRate"
@@ -859,6 +864,7 @@ const VehicleManagement = ({
                     min="0"
                     step="1000"
                     className={getFieldValidationClass('monthlyRate')}
+                    required
                   />
                   {showFieldError('monthlyRate') && (
                     <span className="error-message">{validationErrors.monthlyRate}</span>
