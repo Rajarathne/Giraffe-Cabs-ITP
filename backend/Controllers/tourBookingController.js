@@ -493,6 +493,17 @@ const getTourBookingStats = async (req, res) => {
   }
 };
 
+// ✅ Delete tour booking
+const deleteTourBooking = async (req, res) => {
+  try {
+    const deleted = await TourBooking.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ message: 'Tour booking not found' });
+    res.json({ message: 'Tour booking deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   createTourBooking,
   getAllTourBookings,
@@ -501,7 +512,8 @@ module.exports = {
   updateTourBookingStatus,
   generateTourBookingInvoice,
   downloadTourBookingInvoice,
-  getTourBookingStats
+  getTourBookingStats,
+  deleteTourBooking
 };
 
 

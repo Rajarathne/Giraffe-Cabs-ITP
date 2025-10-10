@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './TourBookingManagement.css';
+import './AdminFormStyles.css';
 
 const TourBookingManagement = ({ 
   tourBookings, 
@@ -31,6 +32,29 @@ const TourBookingManagement = ({
       adminNotes: booking.adminNotes || ''
     });
     setShowModal(true);
+  };
+
+  const handleDeleteBooking = async (bookingId) => {
+    if (!window.confirm('Are you sure you want to delete this tour booking? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('authToken');
+      await axios.delete(`/api/tour-bookings/${bookingId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      alert('Tour booking deleted successfully!');
+      
+      // Refresh the data to show updated information
+      if (onRefreshData) {
+        onRefreshData();
+      }
+    } catch (error) {
+      console.error('Error deleting tour booking:', error);
+      alert('Failed to delete tour booking: ' + (error.response?.data?.message || error.message));
+    }
   };
 
   const validateActionData = (data) => {
@@ -326,8 +350,16 @@ const TourBookingManagement = ({
                     <button 
                       className="btn btn-sm btn-primary"
                       onClick={() => handleBookingSelect(booking)}
+                      title="Manage Booking"
                     >
                       <i className="fas fa-edit"></i> Manage
+                    </button>
+                    <button 
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDeleteBooking(booking._id)}
+                      title="Delete Booking"
+                    >
+                      <i className="fas fa-trash"></i> Delete
                     </button>
                   </div>
                 </td>
