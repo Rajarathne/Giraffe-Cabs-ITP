@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './Booking.css';
 
 const Booking = () => {
@@ -29,6 +29,27 @@ const Booking = () => {
   const [priceFilter, setPriceFilter] = useState('all');
   const [filteredServices, setFilteredServices] = useState([]);
   const navigate = useNavigate();
+  // Auto-calculate distance when pickup/dropoff change (debounced)
+  useEffect(() => {
+    const pickup = (bookingData.pickupLocation || '').trim();
+    const dropoff = (bookingData.dropoffLocation || '').trim();
+    if (!pickup || !dropoff) return;
+
+    const controller = new AbortController();
+    const timeout = setTimeout(async () => {
+      try {
+        const { data } = await axios.get('/api/utils/distance', {
+          params: { pickup, dropoff },
+          signal: controller.signal
+        });
+        setBookingData(prev => ({ ...prev, distance: data.distanceKm }));
+      } catch (err) {
+        console.warn('Distance API failed, keeping manual entry.');
+      }
+    }, 600);
+
+    return () => { clearTimeout(timeout); controller.abort(); };
+  }, [bookingData.pickupLocation, bookingData.dropoffLocation]);
 
   useEffect(() => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
@@ -727,32 +748,25 @@ const Booking = () => {
                       <div className="form-group">
                         <label htmlFor="distance">Distance (km)</label>
                         <small className="distance-instruction">
-                          <i className="fas fa-info-circle"></i> Please enter the approximate distance for your journey. Admin will verify and calculate the final price.
+                          <i className="fas fa-route"></i> Calculated automatically from pickup and drop-off.
                         </small>
                         <input
                           type="number"
                           id="distance"
                           name="distance"
                           value={bookingData.distance}
-                          onChange={(e) => {
-                            const manualDistance = parseFloat(e.target.value) || 0;
-                            setBookingData(prev => ({
-                              ...prev,
-                              distance: manualDistance
-                            }));
-                          }}
+                          onChange={(e) => setBookingData(prev => ({ ...prev, distance: parseFloat(e.target.value) || 0 }))}
                           min="0"
                           step="0.1"
-                          placeholder="Enter distance in km (e.g., 15.5)"
+                          placeholder="Auto-calculated"
                           className="distance-input"
+                          readOnly
                         />
                         {bookingData.pickupLocation && bookingData.dropoffLocation && (
                           <div className="distance-estimate">
                             <small className="distance-help">
-                              <i className="fas fa-route"></i>
-                              <strong>Estimated distance:</strong> {estimateDistanceForUser(bookingData.pickupLocation, bookingData.dropoffLocation) || 'Unknown'} km
-                              <br />
-                              <em>This is an estimate for reference only. Admin will calculate the exact distance and price.</em>
+                              <i className="fas fa-info-circle"></i>
+                              Distance calculated from your locations.
                             </small>
                           </div>
                         )}
