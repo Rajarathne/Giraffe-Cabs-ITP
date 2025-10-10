@@ -192,14 +192,14 @@ const AdminDashboard = () => {
       ]);
 
       console.log('✅ Loaded vehicles data:', vehiclesRes.data?.length || 0, 'vehicles');
-      setVehicles(vehiclesRes.data);
-      setRentals(rentalsRes.data);
-      setBookings(bookingsRes.data);
-      setPayments(paymentsRes.data);
-      setServiceRecords(servicesRes.data);
-      setServiceReminders(serviceRemindersRes.data);
-      setTourPackages(tourPackagesRes.data);
-      setTourBookings(tourBookingsRes.data);
+      setVehicles(vehiclesRes.data || []);
+      setRentals(rentalsRes.data || []);
+      setBookings(bookingsRes.data || []);
+      setPayments(paymentsRes.data || []);
+      setServiceRecords(servicesRes.data || []);
+      setServiceReminders(serviceRemindersRes.data || { today: [], tomorrow: [], total: 0 });
+      setTourPackages(tourPackagesRes.data || []);
+      setTourBookings(tourBookingsRes.data || []);
       setUpcomingTomorrow(upcomingRes.data || { date: '', count: 0, bookings: [] });
       setTodayBookings(todayRes.data || { date: '', count: 0, bookings: [] });
       
@@ -561,11 +561,13 @@ const AdminDashboard = () => {
     const monthlyData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; // 12 months
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     
-    vehicles.forEach(vehicle => {
-      const createdAt = new Date(vehicle.createdAt);
-      const month = createdAt.getMonth();
-      monthlyData[month]++;
-    });
+    if (vehicles && Array.isArray(vehicles)) {
+      vehicles.forEach(vehicle => {
+        const createdAt = new Date(vehicle.createdAt);
+        const month = createdAt.getMonth();
+        monthlyData[month]++;
+      });
+    }
 
     const primaryColor = theme === 'dark' ? '#60a5fa' : '#1E93AB';
     const backgroundColor = theme === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(30, 147, 171, 0.1)';
@@ -585,10 +587,12 @@ const AdminDashboard = () => {
   const getVehicleTypeChartData = () => {
     // Calculate vehicle types distribution
     const vehicleTypeCounts = {};
-    vehicles.forEach(vehicle => {
-      const type = vehicle.vehicleType || 'Unknown';
-      vehicleTypeCounts[type] = (vehicleTypeCounts[type] || 0) + 1;
-    });
+    if (vehicles && Array.isArray(vehicles)) {
+      vehicles.forEach(vehicle => {
+        const type = vehicle.vehicleType || 'Unknown';
+        vehicleTypeCounts[type] = (vehicleTypeCounts[type] || 0) + 1;
+      });
+    }
 
     const labels = Object.keys(vehicleTypeCounts);
     const data = Object.values(vehicleTypeCounts);
@@ -624,10 +628,12 @@ const AdminDashboard = () => {
   const getBookingTypeChartData = () => {
     // Calculate booking types distribution
     const bookingTypeCounts = {};
-    bookings.forEach(booking => {
-      const type = booking.serviceType || 'Unknown';
-      bookingTypeCounts[type] = (bookingTypeCounts[type] || 0) + 1;
-    });
+    if (bookings && Array.isArray(bookings)) {
+      bookings.forEach(booking => {
+        const type = booking.serviceType || 'Unknown';
+        bookingTypeCounts[type] = (bookingTypeCounts[type] || 0) + 1;
+      });
+    }
 
     const labels = Object.keys(bookingTypeCounts);
     const data = Object.values(bookingTypeCounts);
@@ -651,11 +657,13 @@ const AdminDashboard = () => {
     const monthlyData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; // 12 months
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     
-    bookings.forEach(booking => {
-      const createdAt = new Date(booking.createdAt);
-      const month = createdAt.getMonth();
-      monthlyData[month]++;
-    });
+    if (bookings && Array.isArray(bookings)) {
+      bookings.forEach(booking => {
+        const createdAt = new Date(booking.createdAt);
+        const month = createdAt.getMonth();
+        monthlyData[month]++;
+      });
+    }
 
     const primaryColor = theme === 'dark' ? '#60a5fa' : '#40A8C4';
     const backgroundColor = theme === 'dark' ? 'rgba(96, 165, 250, 0.1)' : 'rgba(64, 168, 196, 0.1)';
@@ -675,10 +683,12 @@ const AdminDashboard = () => {
   const getRentalStatusChartData = () => {
     // Calculate rental status distribution
     const rentalStatusCounts = {};
-    rentals.forEach(rental => {
-      const status = rental.status || 'Unknown';
-      rentalStatusCounts[status] = (rentalStatusCounts[status] || 0) + 1;
-    });
+    if (rentals && Array.isArray(rentals)) {
+      rentals.forEach(rental => {
+        const status = rental.status || 'Unknown';
+        rentalStatusCounts[status] = (rentalStatusCounts[status] || 0) + 1;
+      });
+    }
 
     const labels = Object.keys(rentalStatusCounts);
     const data = Object.values(rentalStatusCounts);

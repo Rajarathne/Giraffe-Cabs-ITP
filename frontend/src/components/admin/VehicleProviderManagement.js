@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './VehicleProviderManagement.css';
+import './AdminFormStyles.css';
 import VehicleProviderRegistration from './VehicleProviderRegistration';
 
 const VehicleProviderManagement = () => {
@@ -181,9 +182,8 @@ const VehicleProviderManagement = () => {
 
   return (
     <div className="vehicle-provider-management">
-      <div className="page-header">
-        <h1>Vehicle Provider Management</h1>
-        <p>Manage vehicle provider registrations and approvals</p>
+      <div className="content-header">
+        <h2><i className="fas fa-truck"></i> Vehicle Provider Management</h2>
       </div>
 
       {/* Tab Navigation */}
@@ -357,41 +357,51 @@ const VehicleProviderManagement = () => {
                   <td>
                     <div className="action-buttons">
                       <button 
-                        className="btn btn-sm btn-info"
+                        className="btn btn-info"
                         onClick={() => openModal(provider, 'view')}
+                        title="View Details"
                       >
                         <i className="fas fa-eye"></i>
+                        <span>View</span>
                       </button>
                       {provider.status === 'pending' && (
                         <>
                           <button 
-                            className="btn btn-sm btn-success"
+                            className="btn btn-success"
                             onClick={() => openModal(provider, 'approved')}
+                            title="Approve Provider"
                           >
                             <i className="fas fa-check"></i>
+                            <span>Approve</span>
                           </button>
                           <button 
-                            className="btn btn-sm btn-danger"
+                            className="btn btn-danger"
                             onClick={() => openModal(provider, 'rejected')}
+                            title="Reject Provider"
                           >
                             <i className="fas fa-times"></i>
+                            <span>Reject</span>
                           </button>
                         </>
                       )}
                       {provider.status === 'approved' && (
                         <button 
-                          className="btn btn-sm btn-warning"
+                          className="btn btn-warning"
                           onClick={() => openModal(provider, 'suspended')}
+                          title="Suspend Provider"
                         >
                           <i className="fas fa-pause"></i>
+                          <span>Suspend</span>
                         </button>
                       )}
                       {provider.status === 'suspended' && (
                         <button 
-                          className="btn btn-sm btn-success"
+                          className="btn btn-success"
                           onClick={() => openModal(provider, 'approved')}
+                          title="Reactivate Provider"
                         >
                           <i className="fas fa-play"></i>
+                          <span>Reactivate</span>
                         </button>
                       )}
                     </div>

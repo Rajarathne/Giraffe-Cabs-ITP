@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './VehicleRequestManagement.css';
+import './AdminFormStyles.css';
 
 const VehicleRequestManagement = () => {
   const [vehicleRequests, setVehicleRequests] = useState([]);
@@ -208,9 +209,8 @@ const VehicleRequestManagement = () => {
 
   return (
     <div className="vehicle-request-management">
-      <div className="page-header">
-        <h1>Vehicle Request Management</h1>
-        <p>Manage vehicle rental requests from providers</p>
+      <div className="content-header">
+        <h2><i className="fas fa-car"></i> Vehicle Request Management</h2>
       </div>
 
       {/* Stats Cards */}
@@ -348,41 +348,48 @@ const VehicleRequestManagement = () => {
                   <td>
                     <div className="action-buttons">
                       <button 
-                        className="btn btn-sm btn-info"
+                        className="btn btn-info"
                         onClick={() => openModal(request, 'view')}
                         title="View Details"
                       >
                         <i className="fas fa-eye"></i>
+                        <span>View</span>
                       </button>
                       <button 
-                        className="btn btn-sm btn-warning"
+                        className="btn btn-warning"
                         onClick={() => openModal(request, 'edit')}
                         title="Edit Request"
                       >
                         <i className="fas fa-edit"></i>
+                        <span>Edit</span>
                       </button>
                       {request.status === 'pending' && (
                         <>
                           <button 
-                            className="btn btn-sm btn-success"
+                            className="btn btn-success"
                             onClick={() => openModal(request, 'approved')}
+                            title="Approve Request"
                           >
                             <i className="fas fa-check"></i>
+                            <span>Approve</span>
                           </button>
                           <button 
-                            className="btn btn-sm btn-danger"
+                            className="btn btn-danger"
                             onClick={() => openModal(request, 'rejected')}
+                            title="Reject Request"
                           >
                             <i className="fas fa-times"></i>
+                            <span>Reject</span>
                           </button>
                         </>
                       )}
                       <button 
-                        className="btn btn-sm btn-danger"
+                        className="btn btn-danger"
                         onClick={() => handleDeleteRequest(request._id)}
                         title="Delete Request"
                       >
                         <i className="fas fa-trash"></i>
+                        <span>Delete</span>
                       </button>
                     </div>
                   </td>

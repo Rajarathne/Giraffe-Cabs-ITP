@@ -441,84 +441,9 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Form Styles */
-.form-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
+/* Form Styles - Removed - Using AdminFormStyles.css instead */
 
-.form-group {
-  margin-bottom: 1.5rem;
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.3rem;
-  font-weight: 600;
-  color: #0D1282;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  padding: 0.5rem;
-  border: 2px solid #0D1282;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  transition: all 0.3s ease;
-  background: #EEEDED;
-  color: #333 !important;
-  font-weight: 500;
-  box-sizing: border-box;
-}
-
-.form-group input::placeholder {
-  color: #666 !important;
-  opacity: 1 !important;
-}
-
-.form-group textarea::placeholder {
-  color: #666 !important;
-  opacity: 1 !important;
-}
-
-.form-group select {
-  background: #EEEDED;
-  color: #333 !important;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.form-group select option {
-  background: #EEEDED;
-  color: #333 !important;
-  padding: 0.5rem;
-  font-weight: 500;
-}
-
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #D71313;
-  background: #EEEDED;
-  box-shadow: 0 0 0 3px rgba(215, 19, 19, 0.1);
-  transform: translateY(-1px);
-}
-
-.form-group textarea {
-  resize: vertical;
-  min-height: 80px;
-}
+/* All form styles removed - using AdminFormStyles.css */
 
 /* File Upload Styles */
 .file-upload-container {
@@ -687,221 +612,9 @@
   transform: none !important;
 }
 
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
-}
+/* Modal styles removed - using AdminFormStyles.css */
 
-.modal-content {
-  background: #EEEDED;
-  border-radius: 12px;
-  max-width: 480px;
-  width: 100%;
-  max-height: 85vh;
-  overflow-y: auto;
-  position: relative;
-  border: 2px solid #0D1282;
-  margin: auto;
-}
-
-.large-modal {
-  max-width: 650px;
-}
-
-.modal-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: #D71313;
-  border: 2px solid #D71313;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-size: 1.2rem;
-  cursor: pointer;
-  color: #EEEDED;
-  z-index: 1001;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.modal-close:hover {
-  background: #0D1282;
-  border-color: #0D1282;
-  transform: scale(1.1);
-}
-
-.modal-content h2 {
-  margin: 0 0 0.75rem 0;
-  padding: 1rem 1rem 0 1rem;
-  color: #0D1282;
-  font-weight: 700;
-  text-align: center;
-  border-bottom: 2px solid #0D1282;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
-}
-
-.modal-content form {
-  padding: 0 1rem 1rem 1rem;
-  background: #EEEDED;
-}
-
-/* Validation Styles */
-.form-group input.error,
-.form-group select.error,
-.form-group textarea.error {
-  border-color: #D71313 !important;
-  background: #ffeaea !important;
-  box-shadow: 0 0 0 3px rgba(215, 19, 19, 0.1) !important;
-}
-
-.form-group input.success,
-.form-group select.success,
-.form-group textarea.success {
-  border-color: #28a745 !important;
-  background: #eafaf1 !important;
-  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1) !important;
-}
-
-.error-message {
-  color: #D71313;
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-top: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.error-message::before {
-  content: "⚠";
-  font-size: 0.875rem;
-}
-
-.character-count {
-  font-size: 0.75rem;
-  color: #666;
-  text-align: right;
-  margin-top: 0.25rem;
-  font-weight: 500;
-}
-
-.validation-summary {
-  background: #ffeaea;
-  border: 2px solid #D71313;
-  border-radius: 10px;
-  padding: 1.5rem;
-  margin: 1.5rem 0;
-}
-
-.validation-summary h4 {
-  color: #D71313;
-  margin: 0 0 1rem 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.validation-summary ul {
-  margin: 0;
-  padding-left: 1.5rem;
-  list-style: none;
-}
-
-.validation-summary li {
-  color: #D71313;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  position: relative;
-}
-
-.validation-summary li::before {
-  content: "•";
-  color: #D71313;
-  font-weight: bold;
-  position: absolute;
-  left: -1rem;
-}
-
-.btn-disabled {
-  opacity: 0.6 !important;
-  cursor: not-allowed !important;
-  background: #6c757d !important;
-  border-color: #6c757d !important;
-}
-
-.btn-disabled:hover {
-  transform: none !important;
-  box-shadow: none !important;
-}
-
-/* File upload validation */
-.file-input.error + .file-upload-label {
-  border-color: #D71313 !important;
-  background: #ffeaea !important;
-  color: #D71313 !important;
-}
-
-.file-input.success + .file-upload-label {
-  border-color: #28a745 !important;
-  background: #eafaf1 !important;
-  color: #28a745 !important;
-}
-
-/* Additional form improvements */
-.form-group input:valid {
-  border-color: #F0DE36;
-}
-
-.form-group select:valid {
-  border-color: #F0DE36;
-}
-
-.form-group input:invalid:not(:placeholder-shown) {
-  border-color: #D71313;
-}
-
-.form-group select:invalid {
-  border-color: #D71313;
-}
-
-/* Ensure proper spacing for file upload */
-.file-upload-container {
-  margin-top: 0.5rem;
-}
-
-.photos-preview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-/* Submit button styling */
-.btn-full {
-  margin-top: 1rem;
-  padding: 0.6rem 1rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
+/* All form-related styles removed - using AdminFormStyles.css */
 
 /* Vehicle Reports Styles */
 .vehicle-reports {
@@ -1143,14 +856,7 @@
     grid-template-columns: 1fr;
   }
   
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
-  .form-group {
-    margin-bottom: 1rem;
-  }
+  /* Form styles removed - using AdminFormStyles.css */
   
   .vehicle-actions {
     flex-direction: row;
@@ -1164,20 +870,7 @@
     font-size: 0.8rem;
   }
   
-  .modal-content {
-    margin: 1rem;
-    max-width: calc(100vw - 2rem);
-    border-radius: 10px;
-  }
-  
-  .modal-content h2 {
-    padding: 1.5rem 1.5rem 0 1.5rem;
-    font-size: 1.5rem;
-  }
-  
-  .modal-content form {
-    padding: 0 1.5rem 1.5rem 1.5rem;
-  }
+  /* Modal styles removed - using AdminFormStyles.css */
   
   .modal-close {
     width: 35px;

@@ -327,8 +327,9 @@
 
 .bookings-table td:last-child {
   padding: 0.4rem 0.5rem;
-  min-width: 260px; /* wider space for inline buttons */
+  min-width: 320px; /* wider space for action buttons */
   vertical-align: top;
+  width: 320px;
 }
 
 .bookings-table tr {
@@ -432,21 +433,22 @@
   box-shadow: 0 4px 15px rgba(30, 147, 171, 0.3);
 }
 
-/* Action Buttons - Enhanced */
+/* Action Buttons - FIXED LAYOUT */
 .action-buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
   align-items: center;
-  min-height: 40px;
-  justify-content: flex-start; /* keep buttons aligned to the left inside the cell */
+  min-height: 50px;
+  justify-content: flex-start;
   max-width: 100%;
+  padding: 0.2rem 0;
 }
 
 .action-buttons .btn {
-  font-size: 0.7rem;
-  padding: 0.4rem 0.6rem;
-  border-radius: 6px;
+  font-size: 0.75rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.2px;
@@ -456,11 +458,13 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   white-space: nowrap;
   flex: 0 0 auto;
-  min-width: 60px;
+  min-width: 80px;
+  max-width: 120px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.2rem;
+  gap: 0.3rem;
+  text-align: center;
 }
 
 .action-buttons .btn::before {
@@ -595,14 +599,18 @@
   
   .action-buttons {
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 0.4rem;
     align-items: stretch;
+    min-height: auto;
   }
   
   .action-buttons .btn {
     width: 100%;
     justify-content: center;
-    padding: 0.5rem 0.8rem;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+    min-width: auto;
+    max-width: none;
   }
 }
 
@@ -835,68 +843,65 @@
   box-shadow: 0 6px 20px rgba(51, 51, 51, 0.4);
 }
 
-/* Payment Information Styles */
+/* Payment Information Styles - FIXED OVERLAP */
 .payment-info {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.3rem;
   align-items: flex-start;
+  min-height: 60px;
+  justify-content: center;
 }
 
 .payment-status {
-  padding: 0.4rem 0.8rem;
-  border-radius: 15px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.payment-pending {
-  background: #ffc107;
-  color: #000;
-  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
-}
-
-.payment-paid {
-  background: #28a745;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
-}
-
-.payment-completed {
-  background: #17a2b8;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
-}
-
-.payment-failed {
-  background: #dc3545;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
-}
-
-.payment-method {
   padding: 0.3rem 0.6rem;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 0.7rem;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.3px;
   display: inline-flex;
   align-items: center;
   gap: 0.2rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0.2rem;
 }
 
-.method-cash {
-  background: #6c757d;
+.payment-method {
+  padding: 0.25rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.payment-pending {
+  background: #ffc107;
+  color: #000;
+  box-shadow: 0 2px 6px rgba(255, 193, 7, 0.3);
+}
+
+.payment-paid {
+  background: #28a745;
   color: #fff;
-  box-shadow: 0 1px 6px rgba(108, 117, 125, 0.3);
+  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+}
+
+.payment-completed {
+  background: #17a2b8;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(23, 162, 184, 0.3);
+}
+
+.payment-failed {
+  background: #dc3545;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
 }
 
 .method-card {
@@ -1212,12 +1217,18 @@
   
   .action-buttons {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.4rem;
+    align-items: stretch;
+    min-height: auto;
   }
   
   .action-buttons .btn {
     width: 100%;
     justify-content: center;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+    min-width: auto;
+    max-width: none;
   }
 }
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './BookingManagement.css';
+import './AdminFormStyles.css';
 
 const BookingManagement = ({ 
   bookings, 
@@ -10,9 +11,7 @@ const BookingManagement = ({
   onGenerateBookingReport,
   onRefreshData
 }) => {
-  const [showCashPaymentModal, setShowCashPaymentModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const [cashAmount, setCashAmount] = useState('');
   const [showPricingModal, setShowPricingModal] = useState(false);
   const [pricingData, setPricingData] = useState({
     adminCalculatedDistance: '',
@@ -127,49 +126,6 @@ const BookingManagement = ({
     setDateFilter('all');
   };
 
-  const handleCashPaymentConfirm = async () => {
-    if (!cashAmount || cashAmount <= 0) {
-      alert('Please enter a valid amount');
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem('authToken');
-      
-      // Create payment record
-      await axios.post('/api/payments', {
-        bookingId: selectedBooking._id,
-        amount: parseFloat(cashAmount),
-        paymentMethod: 'cash',
-        status: 'completed',
-        customerName: selectedBooking.user?.firstName + ' ' + selectedBooking.user?.lastName,
-        customerEmail: selectedBooking.user?.email,
-        customerPhone: selectedBooking.user?.phone
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      // Update booking payment status
-      await axios.put(`/api/bookings/${selectedBooking._id}/status`, {
-        paymentStatus: 'paid',
-        paymentMethod: 'cash'
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      alert('Cash payment confirmed successfully!');
-      setShowCashPaymentModal(false);
-      setSelectedBooking(null);
-      setCashAmount('');
-      
-      // Refresh the data to show updated information
-      if (onRefreshData) {
-        onRefreshData();
-      }
-    } catch (error) {
-      alert('Failed to confirm cash payment: ' + (error.response?.data?.message || error.message));
-    }
-  };
 
   const handlePricingUpdate = async () => {
     // Check if it's wedding service
@@ -518,18 +474,6 @@ const BookingManagement = ({
                         <i className="fas fa-calculator"></i> Set Price
                       </button>
                     )}
-                    {booking.paymentStatus === 'pending' && booking.paymentMethod === 'cash' && booking.isPriceConfirmed && (
-                      <button 
-                        className="btn btn-sm btn-warning"
-                        onClick={() => {
-                          setSelectedBooking(booking);
-                          setCashAmount(booking.totalPrice || '');
-                          setShowCashPaymentModal(true);
-                        }}
-                      >
-                        <i className="fas fa-money-bill"></i> Confirm Cash
-                      </button>
-                    )}
                     <button 
                       className="btn btn-sm btn-outline"
                       onClick={() => {
@@ -677,52 +621,6 @@ const BookingManagement = ({
         </div>
       </div>
 
-      {/* Cash Payment Confirmation Modal */}
-      {showCashPaymentModal && (
-        <div className="modal-overlay" onClick={() => setShowCashPaymentModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowCashPaymentModal(false)}>&times;</button>
-            <h2>Confirm Cash Payment</h2>
-            
-            {selectedBooking && (
-              <div className="booking-details">
-                <h3>Booking Details</h3>
-                <p><strong>Customer:</strong> {selectedBooking.user?.firstName} {selectedBooking.user?.lastName}</p>
-                <p><strong>Service:</strong> {selectedBooking.serviceType}</p>
-                <p><strong>Pickup:</strong> {selectedBooking.pickupLocation}</p>
-                <p><strong>Date:</strong> {new Date(selectedBooking.pickupDate).toLocaleDateString()}</p>
-                <p><strong>Time:</strong> {selectedBooking.pickupTime}</p>
-                <p><strong>Original Amount:</strong> LKR {selectedBooking.totalPrice?.toLocaleString() || '0'}</p>
-              </div>
-            )}
-
-            <form onSubmit={(e) => { e.preventDefault(); handleCashPaymentConfirm(); }}>
-              <div className="form-group">
-                <label htmlFor="cashAmount">Amount Received (LKR)</label>
-                <input
-                  type="number"
-                  id="cashAmount"
-                  value={cashAmount}
-                  onChange={(e) => setCashAmount(e.target.value)}
-                  placeholder="Enter amount received..."
-                  min="0"
-                  step="0.01"
-                  required
-                />
-              </div>
-
-              <div className="form-actions">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowCashPaymentModal(false)}>
-                  Cancel
-                </button>
-                <button type="submit" className="btn btn-warning">
-                  <i className="fas fa-money-bill"></i> Confirm Cash Payment
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* Pricing Modal */}
       {showPricingModal && (

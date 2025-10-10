@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './VehicleProviderRegistration.css';
+import './AdminFormStyles.css';
 
 const VehicleProviderRegistration = () => {
   const [formData, setFormData] = useState({

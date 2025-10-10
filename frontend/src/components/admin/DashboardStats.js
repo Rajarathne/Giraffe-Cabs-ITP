@@ -56,9 +56,9 @@ const DashboardStats = ({ stats, serviceReminders, onRemindersClick, onBookingRe
           <h3>{serviceReminders.total}</h3>
           <p>Service Reminders</p>
           <small>
-            {serviceReminders.today.length > 0 && `${serviceReminders.today.length} Today`}
-            {serviceReminders.today.length > 0 && serviceReminders.tomorrow.length > 0 && ', '}
-            {serviceReminders.tomorrow.length > 0 && `${serviceReminders.tomorrow.length} Tomorrow`}
+            {(serviceReminders.today?.length || 0) > 0 && `${serviceReminders.today.length} Today`}
+            {(serviceReminders.today?.length || 0) > 0 && (serviceReminders.tomorrow?.length || 0) > 0 && ', '}
+            {(serviceReminders.tomorrow?.length || 0) > 0 && `${serviceReminders.tomorrow.length} Tomorrow`}
             {serviceReminders.total === 0 && 'No upcoming services'}
           </small>
         </div>

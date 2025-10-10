@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './AdminProfile.css';
+import './AdminFormStyles.css';
 
 const AdminProfile = ({ user, onUpdateProfile }) => {
   const [isEditing, setIsEditing] = useState(false);
